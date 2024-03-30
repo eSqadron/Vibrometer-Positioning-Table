@@ -1,0 +1,3 @@
+[submodule "src_Firmware/MotorControllerFirmware"]
+	path = src_Firmware/MotorControllerFirmware
+	url = https://github.com/eSqadron/NRF52840-Brushed-Motor-Controller-Firmware.git

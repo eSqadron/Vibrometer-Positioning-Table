@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright (c) 2024 Jakub Mazur
+#
+menu "Wedka configurtion"
+rsource "./MotorControllerFirmware/BrushedMotorControllerFirmware/Kconfig"
+endmenu
