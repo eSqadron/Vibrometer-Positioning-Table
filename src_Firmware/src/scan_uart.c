@@ -2,6 +2,7 @@
 #include <zephyr/shell/shell.h>
 #include <stdlib.h>
 
+#include "scan_adc.h"
 #include "scan_driver.h"
 #include "scanner_return_codes.h"
 
@@ -106,6 +107,20 @@ static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *
 	return 0;
 }
 
+static int cmd_scanner_measure(const struct shell *shell, size_t argc, char *argv[])
+{
+	int value;
+	scanner_return_codes_t ret;
+	ret = perform_meas(&value);
+	if(ret != SCAN_SUCCESS) {
+		printk("Error while measuring! - %d\n", ret);
+	} else {
+		printk("Measured value: %d\n", value);
+	}
+
+	return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL, "Define yaw scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_yaw, 5, 0),
 	SHELL_CMD_ARG(pitch, NULL, "Define pitch scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_pitch, 5, 0),
@@ -118,6 +133,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(ready, NULL, "Check scanner readiness and initialise prepared scanner", cmd_scanner_ready),
 	SHELL_CMD(start, NULL, "Start Scanner", cmd_scanner_start),
 	SHELL_CMD(status, NULL, "Get current status", cmd_scanner_get_status),
+	SHELL_CMD(measure, NULL,
+		  "Perform one time measurement,outside of normal operation",
+		  cmd_scanner_measure),
 	SHELL_SUBCMD_SET_END
 );
 

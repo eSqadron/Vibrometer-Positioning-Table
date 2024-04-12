@@ -33,7 +33,7 @@ static scanner_return_codes_t go_to_point()
 {
 	return_codes_t ret;
 	// TODO - this could be moved to megaturbomacro to "primary" motor driver
-	printk("Go To point %d, %d\n", target[Yaw], target[Pitch]);
+	// printk("Go To point %d, %d\n", target[Yaw], target[Pitch]);
 	uint32_t pos_value;
 
 	for (int i = 0; i < SCANNER_AXES; ++i) {
@@ -100,7 +100,7 @@ static void wait_for_point_handler(struct  k_work *dummy)
 
 	if (tagets_acheved) {
 		// Point is achieved
-		printk("Point Achieved!\n");
+		// printk("Point Achieved!\n");
 		for (int i = 0; i < SCANNER_AXES; ++i) {
 			ret = motor_off(scanner.axes[i].channel);
 			if (ret != SUCCESS) {
@@ -164,7 +164,7 @@ static void pause_timer_handler(struct  k_work *dummy)
 
 	if (target[Pitch] > scanner.axes[Pitch].end) {
 		// scanning is finished!
-		printk("Finished!\n");
+		// printk("Finished!\n");
 		scan_ret = finish_scan();
 		if (scan_ret != SCAN_SUCCESS) {
 			scanner.status = Error;
@@ -230,7 +230,7 @@ scanner_return_codes_t start_scanner(void)
 {
 	scanner_return_codes_t scan_ret;
 	if (scanner.status == Ready) {
-		printk("Starting!");
+		// printk("Starting!");
 		target[Yaw] = scanner.axes[Yaw].start;
 		target[Pitch] = scanner.axes[Pitch].start;
 		scan_ret = go_to_point();
