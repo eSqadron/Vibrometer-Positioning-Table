@@ -4,6 +4,8 @@
 
 #include "scan_driver.h"
 #include "scanner_return_codes.h"
+#include "scan_adc.h"
+#include "scan_buffer.h"
 
 // TODO - error handling, both from driver and proper returns in this functions!
 
@@ -128,11 +130,42 @@ static scanner_return_codes_t finish_scan(void)
 
 static void pause_timer_handler(struct  k_work *dummy)
 {
-	// TODO - perform measurement
+	int out_val;
+	scanner_return_codes_t scan_ret;
+	return_codes_t ret;
+	scan_ret = perform_meas(&out_val);
+	if (scan_ret != SCAN_SUCCESS) {
+		scanner.status = Error;
+		return;
+	}
+
+	uint32_t pos_value;
+	struct ScanPoint new_point;
+	ret = position_get(&pos_value, scanner.axes[Yaw].channel);
+	if (ret != SUCCESS) {
+		scanner.status = Error;
+		return;
+	}
+
+	new_point.yaw = pos_value;
+	ret = position_get(&pos_value, scanner.axes[Pitch].channel);
+	if (ret != SUCCESS) {
+		scanner.status = Error;
+		return;
+	}
+
+	new_point.pitch = pos_value;
+
+	new_point.meas_value = out_val;
+
+	scan_ret = add_point(new_point);
+	if (scan_ret != SCAN_SUCCESS) {
+		scanner.status = Error;
+		return;
+	}
+
 	// TODO - Q&A about measurement? Multiple measurements with wait time in between?
 	// TODO - maybe turn off motor or lock it?
-
-	scanner_return_codes_t scan_ret;
 
 	if (scanning_direction == FORWARD) {
 		target[Yaw] += scanner.axes[Yaw].delta;
