@@ -29,7 +29,6 @@ struct ScannerDefinition {
     unsigned int wait_time;
 };
 
-
 scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner);
 
 scanner_return_codes_t start_scanner(void);

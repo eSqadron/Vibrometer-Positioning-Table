@@ -14,4 +14,6 @@ typedef enum {
         ADC_CONVERSION_FAIL = 4,
         ADC_NOT_INITIALISED = 5,
 
+        BUFF_EMPTY = 6,
+
 } scanner_return_codes_t;

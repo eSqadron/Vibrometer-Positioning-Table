@@ -52,8 +52,6 @@ scanner_return_codes_t perform_meas(int *out_val)
 		return ADC_READ_FAIL;
 	}
 
-	printk("buffer: %d\n", buf);
-
 	*out_val = buf;
 
 	err = adc_raw_to_millivolts_dt(&adc_channel, out_val);

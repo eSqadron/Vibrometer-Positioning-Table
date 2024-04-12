@@ -5,6 +5,7 @@
 #include "scan_adc.h"
 #include "scan_driver.h"
 #include "scanner_return_codes.h"
+#include "scan_buffer.h"
 
 static struct ScannerDefinition new_scanner;
 
@@ -113,9 +114,42 @@ static int cmd_scanner_measure(const struct shell *shell, size_t argc, char *arg
 	scanner_return_codes_t ret;
 	ret = perform_meas(&value);
 	if(ret != SCAN_SUCCESS) {
-		printk("Error while measuring! - %d\n", ret);
+		shell_fprintf(shell, SHELL_NORMAL, "Error while measuring! - %d\n", ret);
 	} else {
-		printk("Measured value: %d\n", value);
+		shell_fprintf(shell, SHELL_NORMAL, "Measured value: %d\n", value);
+	}
+
+	return 0;
+}
+
+static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[])
+{
+	unsigned int buff_size;
+	scanner_return_codes_t ret;
+
+	struct ScanPoint *buff;
+
+	buff_size = get_buffer_size();
+
+	if (buff_size == 0) {
+		shell_fprintf(shell, SHELL_NORMAL, "Buffer is empty\n");
+	}
+
+	ret = get_buffer(&buff);
+	if(ret != SCAN_SUCCESS) {
+		shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
+	}
+
+	for(unsigned int i = 0; i < buff_size; ++i) {
+		shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
+			      buff[i].yaw,
+			      buff[i].pitch,
+			      buff[i].meas_value);
+	}
+
+	ret = clear_buffer();
+	if(ret != SCAN_SUCCESS) {
+		shell_fprintf(shell, SHELL_NORMAL, "Couldn't clear buffer! - %d\n", ret);
 	}
 
 	return 0;
@@ -136,6 +170,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(measure, NULL,
 		  "Perform one time measurement,outside of normal operation",
 		  cmd_scanner_measure),
+	SHELL_CMD(dump, NULL,
+		  "Dump measured points",
+		  cmd_scanner_dump),
 	SHELL_SUBCMD_SET_END
 );
 
