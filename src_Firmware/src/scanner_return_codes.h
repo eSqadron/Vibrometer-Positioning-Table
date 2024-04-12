@@ -10,4 +10,8 @@ typedef enum {
 
         SCAN_WRONG_STATUS = 2,
 
+        ADC_READ_FAIL = 3,
+        ADC_CONVERSION_FAIL = 4,
+        ADC_NOT_INITIALISED = 5,
+
 } scanner_return_codes_t;

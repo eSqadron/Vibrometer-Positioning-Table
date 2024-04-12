@@ -13,6 +13,7 @@
 
 #include "driver.h"
 #include "storage.h"
+#include "scan_adc.h"
 
 #if defined(CONFIG_UART_SHELL_SUPPORT)
 #include <zephyr/drivers/uart.h>
@@ -34,4 +35,6 @@ int main(void)
 	#if defined(CONFIG_BT_SUPPORT)
 	init_bt();
 	#endif
+
+	init_adc_scan();
 }
