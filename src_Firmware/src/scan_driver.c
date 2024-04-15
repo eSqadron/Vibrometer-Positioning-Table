@@ -77,6 +77,8 @@ static void wait_for_point_handler(struct  k_work *dummy)
 			return;
 		}
 
+		// printk("CH: %d, v: %d\n", scanner.axes[i].channel, pos_value);
+
 		if (!if_taget_achieved(target[i], pos_value)) {
 			// Target NOT Achieved on one of the channels!
 
@@ -87,6 +89,7 @@ static void wait_for_point_handler(struct  k_work *dummy)
 					return;
 				}
 			}
+
 			tagets_acheved = false;
 			break; // Start only one channel at the time (due to pwm bug)
 			// when this channel hits the target, if will be skipped and next channel
