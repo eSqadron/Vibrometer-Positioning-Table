@@ -286,3 +286,13 @@ scanner_return_codes_t start_scanner(void)
 enum ScannerStatus get_status(void) {
 	return scanner.status;
 }
+
+scanner_return_codes_t reset_scanner(void) {
+	if (scanner.status == Finished || scanner.status == Error) {
+		scanner.status = Ready;
+
+		return SCAN_SUCCESS;
+	}
+
+	return SCAN_WRONG_STATUS;
+}
