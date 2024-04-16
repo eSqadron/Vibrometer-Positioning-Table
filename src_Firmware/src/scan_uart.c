@@ -9,6 +9,18 @@
 
 static struct ScannerDefinition new_scanner;
 
+struct DefineStatus {
+	bool Pitch;
+	bool Yaw;
+	bool Time;
+};
+
+static struct DefineStatus define_status = {
+	false,
+	false,
+	false
+};
+
 static int define_axis(struct ScannerAxis new_axis, enum ScannerAxes axis)
 {
     new_scanner.axes[axis] = new_axis;
@@ -36,7 +48,9 @@ static int cmd_scanner_define_yaw(const struct shell *shell, size_t argc, char *
 		      "New scanner Yaw axis defined succesfully!\n"
 		      );
 
-    return 0;
+	define_status.Yaw = true;
+
+	return 0;
 }
 
 static int cmd_scanner_define_pitch(const struct shell *shell, size_t argc, char *argv[])
@@ -48,8 +62,9 @@ static int cmd_scanner_define_pitch(const struct shell *shell, size_t argc, char
 	shell_fprintf(shell, SHELL_NORMAL,
 		      "New scanner Pitch axis defined succesfully!\n"
 		      );
+	define_status.Pitch = true;
 
-    return 0;
+	return 0;
 }
 
 static int cmd_scanner_define_time(const struct shell *shell, size_t argc, char *argv[])
@@ -61,11 +76,28 @@ static int cmd_scanner_define_time(const struct shell *shell, size_t argc, char 
 		      new_scanner.wait_time
 		      );
 
+	define_status.Time = true;
+
 	return 0;
 }
 
 static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[])
 {
+	if(!define_status.Yaw) {
+		shell_fprintf(shell, SHELL_ERROR, "Yaw is undefined!\n");
+		return 0;
+	}
+
+	if(!define_status.Pitch) {
+		shell_fprintf(shell, SHELL_ERROR, "Pitch is undefined!\n");
+		return 0;
+	}
+
+	if(!define_status.Time) {
+		shell_fprintf(shell, SHELL_ERROR, "Delta Time is undefined!\n");
+		return 0;
+	}
+
 	scanner_return_codes_t scan_ret;
 	scan_ret = define_scanner(new_scanner);
 
@@ -138,6 +170,7 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 	ret = get_buffer(&buff);
 	if(ret != SCAN_SUCCESS) {
 		shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
+		return 0;
 	}
 
 	for(unsigned int i = 0; i < buff_size; ++i) {
@@ -150,6 +183,15 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 	ret = clear_buffer();
 	if(ret != SCAN_SUCCESS) {
 		shell_fprintf(shell, SHELL_NORMAL, "Couldn't clear buffer! - %d\n", ret);
+		return 0;
+	}
+
+	if(get_status() == Finished) {
+		ret = reset_scanner();
+		if(ret != SCAN_SUCCESS) {
+			shell_fprintf(shell, SHELL_NORMAL, "Couldn't reset scanner status! - %d\n", ret);
+			return 0;
+		}
 	}
 
 	return 0;
