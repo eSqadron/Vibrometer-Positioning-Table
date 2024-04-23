@@ -32,9 +32,13 @@ int main(void)
 		target_speed_set(initial_template.speed, CH0);
 	}
 
-	#if defined(CONFIG_BT_SUPPORT)
+#if defined(CONFIG_BT_SUPPORT)
 	init_bt();
-	#endif
+#endif
+
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 
 	init_adc_scan();
+
+#endif
 }

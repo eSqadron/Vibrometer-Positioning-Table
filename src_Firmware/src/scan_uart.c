@@ -140,20 +140,6 @@ static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *
 	return 0;
 }
 
-static int cmd_scanner_measure(const struct shell *shell, size_t argc, char *argv[])
-{
-	int value;
-	scanner_return_codes_t ret;
-	ret = perform_meas(&value);
-	if(ret != SCAN_SUCCESS) {
-		shell_fprintf(shell, SHELL_NORMAL, "Error while measuring! - %d\n", ret);
-	} else {
-		shell_fprintf(shell, SHELL_NORMAL, "Measured value: %d\n", value);
-	}
-
-	return 0;
-}
-
 static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[])
 {
 	unsigned int buff_size;
@@ -174,10 +160,17 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 	}
 
 	for(unsigned int i = 0; i < buff_size; ++i) {
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 		shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
 			      buff[i].yaw,
 			      buff[i].pitch,
 			      buff[i].meas_value);
+#endif
+#if defined(CONFIG_MANUAL_MEASUREMENTS)
+		shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d\n",
+			      buff[i].yaw,
+			      buff[i].pitch);
+#endif
 	}
 
 	ret = clear_buffer();
@@ -197,6 +190,40 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 	return 0;
 }
 
+
+static int cmd_get_point(const struct shell *shell, size_t argc, char *argv[])
+{
+	scanner_return_codes_t ret;
+	struct ScanPoint new_point;
+
+	ret = get_current_point(&new_point);
+
+	if(ret != SCAN_SUCCESS) {
+		shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
+		return 0;
+	}
+
+	shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d\n",
+			new_point.yaw,
+			new_point.pitch);
+
+	return 0;
+}
+
+static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
+{
+	scanner_return_codes_t ret;
+
+	ret = move_to_next_point();
+
+	if(ret != SCAN_SUCCESS) {
+		shell_fprintf(shell, SHELL_NORMAL, "Couldn't move to next point! - %d\n", ret);
+		return 0;
+	}
+
+	return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL, "Define yaw scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_yaw, 5, 0),
 	SHELL_CMD_ARG(pitch, NULL, "Define pitch scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_pitch, 5, 0),
@@ -209,11 +236,12 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(ready, NULL, "Check scanner readiness and initialise prepared scanner", cmd_scanner_ready),
 	SHELL_CMD(start, NULL, "Start Scanner", cmd_scanner_start),
 	SHELL_CMD(status, NULL, "Get current status", cmd_scanner_get_status),
-	SHELL_CMD(measure, NULL,
-		  "Perform one time measurement,outside of normal operation",
-		  cmd_scanner_measure),
+	SHELL_CMD(get_point, NULL, "Get current point and perform measurement outside of normal operation", cmd_get_point),
+#if defined(CONFIG_MANUAL_MEASUREMENTS)
+	SHELL_CMD(next_point, NULL, "Continue to the next point", cmd_next_point),
+#endif
 	SHELL_CMD(dump, NULL,
-		  "Dump measured points",
+		  "Dump points measured so far and clear existing buffer",
 		  cmd_scanner_dump),
 	SHELL_SUBCMD_SET_END
 );

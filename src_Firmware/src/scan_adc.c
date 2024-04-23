@@ -1,3 +1,5 @@
+#if defined(CONFIG_AUTO_MEASUREMENTS)
+
 #include <zephyr/drivers/adc.h>
 #include "scan_adc.h"
 
@@ -63,3 +65,5 @@ scanner_return_codes_t perform_meas(int *out_val)
 
 	return SCAN_SUCCESS;
 }
+
+#endif
