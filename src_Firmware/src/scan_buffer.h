@@ -1,9 +1,12 @@
+#pragma once
 #include "scanner_return_codes.h"
 
 struct ScanPoint {
     int yaw;
     int pitch;
+#if defined(CONFIG_AUTO_MEASUREMENTS)
     int meas_value;
+#endif
 };
 
 scanner_return_codes_t add_point(struct ScanPoint new_point);

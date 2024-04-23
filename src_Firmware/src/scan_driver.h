@@ -1,5 +1,6 @@
 #include "driver.h"
 #include "scanner_return_codes.h"
+#include "scan_buffer.h"
 
 struct ScannerAxis {
     int start;
@@ -17,6 +18,7 @@ enum ScannerStatus {
     Uninitialised,
     Ready,
     Scanning,
+    WaitingForContinuation,
     WaitingForDump,
     Finished,
     Error,
@@ -28,6 +30,10 @@ struct ScannerDefinition {
     enum ScannerStatus status;
     unsigned int wait_time;
 };
+
+scanner_return_codes_t get_current_point(struct ScanPoint *new_point);
+
+scanner_return_codes_t move_to_next_point(void);
 
 scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner);
 

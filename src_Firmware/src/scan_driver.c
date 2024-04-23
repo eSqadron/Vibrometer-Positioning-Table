@@ -5,7 +5,6 @@
 #include "scan_driver.h"
 #include "scanner_return_codes.h"
 #include "scan_adc.h"
-#include "scan_buffer.h"
 
 // TODO - error handling, both from driver and proper returns in this functions!
 
@@ -133,33 +132,14 @@ static scanner_return_codes_t finish_scan(void)
 
 static void pause_timer_handler(struct  k_work *dummy)
 {
-	int out_val;
 	scanner_return_codes_t scan_ret;
-	return_codes_t ret;
-	scan_ret = perform_meas(&out_val);
+	struct ScanPoint new_point;
+	scan_ret = get_current_point(&new_point);
+
 	if (scan_ret != SCAN_SUCCESS) {
 		scanner.status = Error;
 		return;
 	}
-
-	uint32_t pos_value;
-	struct ScanPoint new_point;
-	ret = position_get(&pos_value, scanner.axes[Yaw].channel);
-	if (ret != SUCCESS) {
-		scanner.status = Error;
-		return;
-	}
-
-	new_point.yaw = pos_value;
-	ret = position_get(&pos_value, scanner.axes[Pitch].channel);
-	if (ret != SUCCESS) {
-		scanner.status = Error;
-		return;
-	}
-
-	new_point.pitch = pos_value;
-
-	new_point.meas_value = out_val;
 
 	scan_ret = add_point(new_point);
 	if (scan_ret != SCAN_SUCCESS) {
@@ -167,7 +147,6 @@ static void pause_timer_handler(struct  k_work *dummy)
 		return;
 	}
 
-	// TODO - Q&A about measurement? Multiple measurements with wait time in between?
 	// TODO - maybe turn off motor or lock it?
 
 	if (scanning_direction == FORWARD) {
@@ -210,12 +189,69 @@ static void pause_timer_handler(struct  k_work *dummy)
 		return;
 	}
 
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 	scan_ret = go_to_point();
 	if (scan_ret != SCAN_SUCCESS) {
 		scanner.status = Error;
 		return;
 	}
+#endif
+#if defined(CONFIG_MANUAL_MEASUREMENTS)
+	scanner.status = WaitingForContinuation;
+	return;
+#endif
 }
+
+scanner_return_codes_t get_current_point(struct ScanPoint *new_point)
+{
+	return_codes_t ret;
+#if defined(CONFIG_AUTO_MEASUREMENTS)
+	int out_val;
+	scanner_return_codes_t scan_ret;
+
+	scan_ret = perform_meas(&out_val);
+	if (scan_ret != SCAN_SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+#endif
+
+	uint32_t pos_value;
+	ret = position_get(&pos_value, scanner.axes[Yaw].channel);
+	if (ret != SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+
+	new_point->yaw = pos_value;
+	ret = position_get(&pos_value, scanner.axes[Pitch].channel);
+	if (ret != SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+
+	new_point->pitch = pos_value;
+#if defined(CONFIG_AUTO_MEASUREMENTS)
+	new_point->meas_value = out_val;
+#endif
+	return SCAN_SUCCESS;
+}
+
+#if defined(CONFIG_MANUAL_MEASUREMENTS)
+scanner_return_codes_t move_to_next_point(void)
+{
+	scanner_return_codes_t scan_ret;
+
+	if (scanner.status != WaitingForContinuation) {
+		return SCAN_WRONG_STATUS;
+	}
+
+	scan_ret = go_to_point();
+	if (scan_ret != SCAN_SUCCESS) {
+		scanner.status = Error;
+		return SCAN_DRIVER_ERROR;
+	}
+
+	return SCAN_SUCCESS;
+}
+#endif
 
 K_WORK_DEFINE(pause_timer_work, pause_timer_handler);
 static void pause_timer_handler_wrapper(struct k_timer *dummy)
