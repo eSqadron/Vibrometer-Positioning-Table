@@ -224,6 +224,20 @@ static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 	return 0;
 }
 
+static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[])
+{
+	scanner_return_codes_t ret;
+
+	ret = stop_scanner();
+
+	if(ret != SCAN_SUCCESS) {
+		shell_fprintf(shell, SHELL_NORMAL, "Couldn't stop the scanner! - %d\n", ret);
+		return 0;
+	}
+
+	return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL, "Define yaw scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_yaw, 5, 0),
 	SHELL_CMD_ARG(pitch, NULL, "Define pitch scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_pitch, 5, 0),
@@ -243,6 +257,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(dump, NULL,
 		  "Dump points measured so far and clear existing buffer",
 		  cmd_scanner_dump),
+	SHELL_CMD(stop, NULL,
+		  "Finish scanning prematurely",
+		  cmd_scanner_stop),
 	SHELL_SUBCMD_SET_END
 );
 

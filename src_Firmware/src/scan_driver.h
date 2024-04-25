@@ -19,7 +19,7 @@ enum ScannerStatus {
     Ready,
     Scanning,
     WaitingForContinuation,
-    WaitingForDump,
+    Stopping,
     Finished,
     Error,
 };
@@ -42,3 +42,5 @@ scanner_return_codes_t start_scanner(void);
 enum ScannerStatus get_status(void);
 
 scanner_return_codes_t reset_scanner(void);
+
+scanner_return_codes_t stop_scanner(void);

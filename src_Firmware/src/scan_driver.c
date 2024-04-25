@@ -134,6 +134,11 @@ static void pause_timer_handler(struct  k_work *dummy)
 {
 	scanner_return_codes_t scan_ret;
 	struct ScanPoint new_point;
+
+	if (scanner.status == Stopping) {
+		scanner.status = Finished;
+	}
+
 	scan_ret = get_current_point(&new_point);
 
 	if (scan_ret != SCAN_SUCCESS) {
@@ -326,6 +331,22 @@ enum ScannerStatus get_status(void) {
 scanner_return_codes_t reset_scanner(void) {
 	if (scanner.status == Finished || scanner.status == Error) {
 		scanner.status = Ready;
+
+		return SCAN_SUCCESS;
+	}
+
+	return SCAN_WRONG_STATUS;
+}
+
+scanner_return_codes_t stop_scanner(void) {
+	if (scanner.status == WaitingForContinuation) {
+		scanner.status = Finished;
+
+		return SCAN_SUCCESS;
+	}
+
+	if (scanner.status == Scanning) {
+		scanner.status = Stopping;
 
 		return SCAN_SUCCESS;
 	}
