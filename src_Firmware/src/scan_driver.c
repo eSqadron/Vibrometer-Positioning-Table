@@ -248,6 +248,8 @@ scanner_return_codes_t move_to_next_point(void)
 		return SCAN_WRONG_STATUS;
 	}
 
+	scanner.status = Scanning;
+
 	scan_ret = go_to_point();
 	if (scan_ret != SCAN_SUCCESS) {
 		scanner.status = Error;
