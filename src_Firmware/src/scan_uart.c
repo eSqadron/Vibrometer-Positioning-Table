@@ -221,6 +221,8 @@ static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 		return 0;
 	}
 
+	shell_fprintf(shell, SHELL_NORMAL, "Succesfully started movement to next point!\n");
+
 	return 0;
 }
 
