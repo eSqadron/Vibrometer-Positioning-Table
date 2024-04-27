@@ -127,7 +127,7 @@ static scanner_return_codes_t finish_scan(void)
 	scanner.status = Finished;
 	// TODO, disable motors, etc.
 
-	return SCAN_DRIVER_ERROR;
+	return SCAN_SUCCESS;
 }
 
 static void pause_timer_handler(struct  k_work *dummy)
@@ -354,4 +354,21 @@ scanner_return_codes_t stop_scanner(void) {
 	}
 
 	return SCAN_WRONG_STATUS;
+}
+
+char* get_status_as_string(enum ScannerStatus status)
+{
+	// source:
+	// https://www.linkedin.com/pulse/mapping-enum-string-c-language-sathishkumar-duraisamy/
+	static const char * const status_names[] = {
+		[Uninitialised] = "Uninitialised",
+		[Ready] = "Ready",
+		[Scanning] = "Scanning",
+		[WaitingForContinuation] = "WaitingForContinuation",
+		[Stopping] = "Stopping",
+		[Finished] = "Finished",
+		[Error] = "Error",
+	};
+
+	return status_names[status];
 }

@@ -44,3 +44,5 @@ enum ScannerStatus get_status(void);
 scanner_return_codes_t reset_scanner(void);
 
 scanner_return_codes_t stop_scanner(void);
+
+char* get_status_as_string(enum ScannerStatus status);

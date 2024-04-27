@@ -136,7 +136,7 @@ static int cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[
 static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *argv[])
 {
 	enum ScannerStatus ret_status = get_status();
-	shell_fprintf(shell, SHELL_NORMAL, "status: %d\n", ret_status);
+	shell_fprintf(shell, SHELL_NORMAL, "status: %s\n", get_status_as_string(ret_status));
 	return 0;
 }
 
