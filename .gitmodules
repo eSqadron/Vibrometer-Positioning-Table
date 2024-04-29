@@ -4,3 +4,6 @@
 [submodule "MatlabAPI"]
 	path = MatlabAPI
 	url = https://github.com/eSqadron/Vibrometer-Table-MatlabAPI.git
+[submodule "HostApp"]
+	path = HostApp
+	url = https://github.com/eSqadron/Vibrometer-Table-HostApp.git
