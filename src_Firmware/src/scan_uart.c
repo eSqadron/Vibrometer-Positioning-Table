@@ -249,17 +249,19 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 		return 0;
 	}
 
+	shell_fprintf(shell, SHELL_NORMAL, "Succesfully stopped scanner!\n");
+
 	return 0;
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL,
-		      "Define yaw scanning axis.\n\\
-		      Args: <channel> <start deg> <stop deg> <delta deg>",
+		      "Define yaw scanning axis.\n"
+		      "Args: <channel> <start deg> <stop deg> <delta deg>",
 		      cmd_scanner_define_yaw, 5, 0),
 	SHELL_CMD_ARG(pitch, NULL,
-		      "Define pitch scanning axis.\n\\
-		      Args: <channel> <start deg> <stop deg> <delta deg>",
+		      "Define pitch scanning axis.\n"
+		      "Args: <channel> <start deg> <stop deg> <delta deg>",
 		      cmd_scanner_define_pitch, 5, 0),
 	SHELL_CMD_ARG(time, NULL,
 		      "Define wait time between moving and scanning (in msec)",
@@ -280,9 +282,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(next_point, NULL, "Continue to the next point", cmd_next_point),
 #endif
 	SHELL_CMD(dump, NULL,
-		  "Dump points measured from previous dump (or measuement beginning), \\
-		  clear existing buffer, and if measurement is finished, reset scanner to \\
-		  ready status",
+		  "Dump points measured from previous dump (or measuement beginning), "
+		  "clear existing buffer, and if measurement is finished, reset scanner to "
+		  "ready status",
 		  cmd_scanner_dump),
 	SHELL_CMD(stop, NULL,
 		  "Finish scanning prematurely",
