@@ -21,6 +21,8 @@ static struct DefineStatus define_status = {
 	false
 };
 
+
+
 static int define_axis(struct ScannerAxis new_axis, enum ScannerAxes axis)
 {
     new_scanner.axes[axis] = new_axis;
@@ -93,7 +95,16 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 		return 0;
 	}
 
+
+#if defined(CONFIG_MANUAL_MEASUREMENTS)
 	if(!define_status.Time) {
+		new_scanner.wait_time = 100;
+		define_status.Time = true;
+	}
+#endif
+
+	if(!define_status.Time) {
+
 		shell_fprintf(shell, SHELL_ERROR, "Delta Time is undefined!\n");
 		return 0;
 	}
@@ -150,39 +161,40 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 	buff_size = get_buffer_size();
 
 	if (buff_size == 0) {
-		shell_fprintf(shell, SHELL_NORMAL, "Buffer is empty\n");
-	}
+		shell_fprintf(shell, SHELL_NORMAL, "Buffer is empty!\n");
+	} else {
+		ret = get_buffer(&buff);
+		if(ret != SCAN_SUCCESS) {
+			shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
+			return 0;
+		}
 
-	ret = get_buffer(&buff);
-	if(ret != SCAN_SUCCESS) {
-		shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
-		return 0;
-	}
-
-	for(unsigned int i = 0; i < buff_size; ++i) {
+		for(unsigned int i = 0; i < buff_size; ++i) {
 #if defined(CONFIG_AUTO_MEASUREMENTS)
-		shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
-			      buff[i].yaw,
-			      buff[i].pitch,
-			      buff[i].meas_value);
+			shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
+				      buff[i].yaw,
+				      buff[i].pitch,
+				      buff[i].meas_value);
 #endif
 #if defined(CONFIG_MANUAL_MEASUREMENTS)
-		shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d\n",
-			      buff[i].yaw,
-			      buff[i].pitch);
+			shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d\n",
+				      buff[i].yaw,
+				      buff[i].pitch);
 #endif
-	}
+		}
 
-	ret = clear_buffer();
-	if(ret != SCAN_SUCCESS) {
-		shell_fprintf(shell, SHELL_NORMAL, "Couldn't clear buffer! - %d\n", ret);
-		return 0;
+		ret = clear_buffer();
+		if(ret != SCAN_SUCCESS) {
+			shell_fprintf(shell, SHELL_NORMAL, "Couldn't clear buffer! - %d\n", ret);
+			return 0;
+		}
 	}
 
 	if(get_status() == Finished) {
 		ret = reset_scanner();
 		if(ret != SCAN_SUCCESS) {
-			shell_fprintf(shell, SHELL_NORMAL, "Couldn't reset scanner status! - %d\n", ret);
+			shell_fprintf(shell, SHELL_NORMAL,
+				      "Couldn't reset scanner status! - %d\n", ret);
 			return 0;
 		}
 	}
@@ -241,23 +253,36 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
-	SHELL_CMD_ARG(yaw, NULL, "Define yaw scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_yaw, 5, 0),
-	SHELL_CMD_ARG(pitch, NULL, "Define pitch scanning axis.\nArgs: <channel> <start deg> <stop deg> <delta deg>", cmd_scanner_define_pitch, 5, 0),
-	SHELL_CMD_ARG(time, NULL, "Define wait time between moving and scanning (in msec)", cmd_scanner_define_time, 2, 0),
+	SHELL_CMD_ARG(yaw, NULL,
+		      "Define yaw scanning axis.\n\\
+		      Args: <channel> <start deg> <stop deg> <delta deg>",
+		      cmd_scanner_define_yaw, 5, 0),
+	SHELL_CMD_ARG(pitch, NULL,
+		      "Define pitch scanning axis.\n\\
+		      Args: <channel> <start deg> <stop deg> <delta deg>",
+		      cmd_scanner_define_pitch, 5, 0),
+	SHELL_CMD_ARG(time, NULL,
+		      "Define wait time between moving and scanning (in msec)",
+		      cmd_scanner_define_time, 2, 0),
 	SHELL_SUBCMD_SET_END
 );
 
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(define, &sub_scanner_define, "Active template", NULL),
-	SHELL_CMD(ready, NULL, "Check scanner readiness and initialise prepared scanner", cmd_scanner_ready),
+	SHELL_CMD(ready, NULL,
+		  "Check scanner readiness and initialise prepared scanner", cmd_scanner_ready),
 	SHELL_CMD(start, NULL, "Start Scanner", cmd_scanner_start),
 	SHELL_CMD(status, NULL, "Get current status", cmd_scanner_get_status),
-	SHELL_CMD(get_point, NULL, "Get current point and perform measurement outside of normal operation", cmd_get_point),
+	SHELL_CMD(get_point, NULL,
+		  "Get current point and perform measurement outside of normal operation",
+		  cmd_get_point),
 #if defined(CONFIG_MANUAL_MEASUREMENTS)
 	SHELL_CMD(next_point, NULL, "Continue to the next point", cmd_next_point),
 #endif
 	SHELL_CMD(dump, NULL,
-		  "Dump points measured so far and clear existing buffer",
+		  "Dump points measured from previous dump (or measuement beginning), \\
+		  clear existing buffer, and if measurement is finished, reset scanner to \\
+		  ready status",
 		  cmd_scanner_dump),
 	SHELL_CMD(stop, NULL,
 		  "Finish scanning prematurely",
