@@ -169,6 +169,8 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 			return 0;
 		}
 
+		shell_fprintf(shell, SHELL_NORMAL, "Dumping last %d points!\n", buff_size);
+
 		for(unsigned int i = 0; i < buff_size; ++i) {
 #if defined(CONFIG_AUTO_MEASUREMENTS)
 			shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
