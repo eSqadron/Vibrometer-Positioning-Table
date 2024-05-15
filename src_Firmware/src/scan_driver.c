@@ -22,28 +22,28 @@ struct k_timer wait_for_point_timer;
 
 static int target[SCANNER_AXES];
 
-static bool if_taget_achieved(uint32_t target_pos, uint32_t current_position)
-{
-	// TODO - add possibility to return actual max position from driver!
-	return abs(current_position-target_pos) <=
-		(360u * CONFIG_POSITION_CONTROL_MODIFIER) /
-		(CONFIG_POS_CONTROL_PRECISION_MODIFIER);
-}
+// static bool if_taget_achieved(uint32_t target_pos, uint32_t current_position)
+// {
+// 	// TODO - add possibility to return actual max position from driver!
+// 	return abs(current_position-target_pos) <=
+// 		(360u * CONFIG_POSITION_CONTROL_MODIFIER) /
+// 		(CONFIG_POS_CONTROL_PRECISION_MODIFIER);
+// }
 
 static scanner_return_codes_t go_to_point()
 {
 	return_codes_t ret;
 	// TODO - this could be moved to megaturbomacro to "primary" motor driver
 	// printk("Go To point %d, %d\n", target[Yaw], target[Pitch]);
-	uint32_t pos_value;
 
 	for (int i = 0; i < SCANNER_AXES; ++i) {
-		ret = position_get(&pos_value, scanner.axes[i].channel);
+		ret = target_position_set(target[i], scanner.axes[i].channel);
+
 		if (ret != SUCCESS) {
 			return SCAN_DRIVER_ERROR;
 		}
 
-		if(if_taget_achieved(target[i], pos_value)) {
+		if(is_target_achieved(scanner.axes[i].channel)) {
 			continue;
 		}
 		// TODO - uncomment when pwm HW bug is fixed
@@ -51,12 +51,6 @@ static scanner_return_codes_t go_to_point()
 		// if (!get_motor_off_on(scanner.axes[i].channel)) {
 		// 	motor_on(FORWARD, scanner.axes[i].channel);
 		// }
-
-		ret = target_position_set(target[i], scanner.axes[i].channel);
-
-		if (ret != SUCCESS) {
-			return SCAN_DRIVER_ERROR;
-		}
 	}
 
 	k_timer_start(&wait_for_point_timer, K_MSEC(TIME_BETWEEN_POS_CHECKS_MSEC), K_NO_WAIT);
@@ -66,19 +60,12 @@ static scanner_return_codes_t go_to_point()
 static void wait_for_point_handler(struct  k_work *dummy)
 {
 	return_codes_t ret;
-	uint32_t pos_value;
 	bool tagets_acheved = true; // Target achieved on BOTH channels!
 
 	for (int i = 0; i < SCANNER_AXES; ++i) {
-		ret = position_get(&pos_value, scanner.axes[i].channel);
-		if (ret != SUCCESS) {
-			scanner.status = Error;
-			return;
-		}
-
 		// printk("CH: %d, v: %d\n", scanner.axes[i].channel, pos_value);
 
-		if (!if_taget_achieved(target[i], pos_value)) {
+		if (!is_target_achieved(scanner.axes[i].channel)) {
 			// Target NOT Achieved on one of the channels!
 
 			if (!get_motor_off_on(scanner.axes[i].channel)) {
@@ -112,6 +99,7 @@ static void wait_for_point_handler(struct  k_work *dummy)
 				return;
 			}
 		}
+		// TODO - remove this timer!
 		k_timer_start(&pause_timer, K_MSEC(scanner.wait_time), K_NO_WAIT);
 		return;
 	} else {
