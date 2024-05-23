@@ -37,13 +37,6 @@ static scanner_return_codes_t go_to_point()
 	// printk("Go To point %d, %d\n", target[Yaw], target[Pitch]);
 
 	for (int i = 0; i < SCANNER_AXES; ++i) {
-		uint32_t value;
-		position_get(&value, scanner.axes[i].channel);
-
-		if(is_target_achieved_raw(value, target[i])) {
-			continue;
-		}
-
 		ret = target_position_set(target[i], scanner.axes[i].channel);
 
 		if (ret != SUCCESS) {
