@@ -43,7 +43,7 @@ static scanner_return_codes_t go_to_point()
 			return SCAN_DRIVER_ERROR;
 		}
 
-		if(is_target_achieved(scanner.axes[i].channel)) {
+		if (is_target_achieved(scanner.axes[i].channel)) {
 			continue;
 		}
 		// TODO - uncomment when pwm HW bug is fixed
@@ -302,7 +302,7 @@ scanner_return_codes_t start_scanner(void)
 		target[Pitch] = scanner.axes[Pitch].start;
 		scan_ret = go_to_point();
 
-		if(scan_ret != SCAN_SUCCESS) {
+		if (scan_ret != SCAN_SUCCESS) {
 			return scan_ret;
 		}
 
