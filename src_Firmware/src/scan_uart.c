@@ -85,25 +85,25 @@ static int cmd_scanner_define_time(const struct shell *shell, size_t argc, char 
 
 static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[])
 {
-	if(!define_status.Yaw) {
+	if (!define_status.Yaw) {
 		shell_fprintf(shell, SHELL_ERROR, "Yaw is undefined!\n");
 		return 0;
 	}
 
-	if(!define_status.Pitch) {
+	if (!define_status.Pitch) {
 		shell_fprintf(shell, SHELL_ERROR, "Pitch is undefined!\n");
 		return 0;
 	}
 
 
 #if defined(CONFIG_MANUAL_MEASUREMENTS)
-	if(!define_status.Time) {
+	if (!define_status.Time) {
 		new_scanner.wait_time = 100;
 		define_status.Time = true;
 	}
 #endif
 
-	if(!define_status.Time) {
+	if (!define_status.Time) {
 
 		shell_fprintf(shell, SHELL_ERROR, "Delta Time is undefined!\n");
 		return 0;
@@ -164,7 +164,7 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 		shell_fprintf(shell, SHELL_NORMAL, "Buffer is empty!\n");
 	} else {
 		ret = get_buffer(&buff);
-		if(ret != SCAN_SUCCESS) {
+		if (ret != SCAN_SUCCESS) {
 			shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
 			return 0;
 		}
@@ -186,15 +186,15 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 		}
 
 		ret = clear_buffer();
-		if(ret != SCAN_SUCCESS) {
+		if (ret != SCAN_SUCCESS) {
 			shell_fprintf(shell, SHELL_NORMAL, "Couldn't clear buffer! - %d\n", ret);
 			return 0;
 		}
 	}
 
-	if(get_status() == Finished) {
+	if (get_status() == Finished) {
 		ret = reset_scanner();
-		if(ret != SCAN_SUCCESS) {
+		if (ret != SCAN_SUCCESS) {
 			shell_fprintf(shell, SHELL_NORMAL,
 				      "Couldn't reset scanner status! - %d\n", ret);
 			return 0;
@@ -212,7 +212,7 @@ static int cmd_get_point(const struct shell *shell, size_t argc, char *argv[])
 
 	ret = get_current_point(&new_point);
 
-	if(ret != SCAN_SUCCESS) {
+	if (ret != SCAN_SUCCESS) {
 		shell_fprintf(shell, SHELL_NORMAL, "Couldn't get buffer! - %d\n", ret);
 		return 0;
 	}
@@ -230,7 +230,7 @@ static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 
 	ret = move_to_next_point();
 
-	if(ret != SCAN_SUCCESS) {
+	if (ret != SCAN_SUCCESS) {
 		shell_fprintf(shell, SHELL_NORMAL, "Couldn't move to next point! - %d\n", ret);
 		return 0;
 	}
@@ -246,7 +246,7 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 
 	ret = stop_scanner();
 
-	if(ret != SCAN_SUCCESS) {
+	if (ret != SCAN_SUCCESS) {
 		shell_fprintf(shell, SHELL_NORMAL, "Couldn't stop the scanner! - %d\n", ret);
 		return 0;
 	}
