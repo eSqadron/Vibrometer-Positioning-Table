@@ -12,13 +12,17 @@ static struct ScannerDefinition new_scanner;
 struct DefineStatus {
 	bool Pitch;
 	bool Yaw;
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 	bool Time;
+#endif
 };
 
 static struct DefineStatus define_status = {
 	false,
 	false,
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 	false
+#endif
 };
 
 
@@ -69,6 +73,7 @@ static int cmd_scanner_define_pitch(const struct shell *shell, size_t argc, char
 	return 0;
 }
 
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 static int cmd_scanner_define_time(const struct shell *shell, size_t argc, char *argv[])
 {
 	new_scanner.wait_time = (unsigned int)strtol(argv[1], NULL, 10);
@@ -82,6 +87,7 @@ static int cmd_scanner_define_time(const struct shell *shell, size_t argc, char 
 
 	return 0;
 }
+#endif
 
 static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[])
 {
@@ -95,19 +101,13 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 		return 0;
 	}
 
-
-#if defined(CONFIG_MANUAL_MEASUREMENTS)
-	if (!define_status.Time) {
-		new_scanner.wait_time = 100;
-		define_status.Time = true;
-	}
-#endif
-
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 	if (!define_status.Time) {
 
 		shell_fprintf(shell, SHELL_ERROR, "Delta Time is undefined!\n");
 		return 0;
 	}
+#endif
 
 	scanner_return_codes_t scan_ret;
 	scan_ret = define_scanner(new_scanner);
@@ -147,7 +147,7 @@ static int cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[
 static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *argv[])
 {
 	enum ScannerStatus ret_status = get_status();
-	shell_fprintf(shell, SHELL_NORMAL, "status: %s\n", get_status_as_string(ret_status));
+	shell_fprintf(shell, SHELL_NORMAL, "status: %s\n", status_names[ret_status]);
 	return 0;
 }
 
@@ -178,7 +178,7 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 				      buff[i].pitch,
 				      buff[i].meas_value);
 #endif
-#if defined(CONFIG_MANUAL_MEASUREMENTS)
+#if !defined(CONFIG_AUTO_MEASUREMENTS)
 			shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d\n",
 				      buff[i].yaw,
 				      buff[i].pitch);
@@ -265,9 +265,11 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 		      "Define pitch scanning axis.\n"
 		      "Args: <channel> <start deg> <stop deg> <delta deg>",
 		      cmd_scanner_define_pitch, 5, 0),
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 	SHELL_CMD_ARG(time, NULL,
 		      "Define wait time between moving and scanning (in msec)",
 		      cmd_scanner_define_time, 2, 0),
+#endif
 	SHELL_SUBCMD_SET_END
 );
 
@@ -280,7 +282,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(get_point, NULL,
 		  "Get current point and perform measurement outside of normal operation",
 		  cmd_get_point),
-#if defined(CONFIG_MANUAL_MEASUREMENTS)
+#if !defined(CONFIG_AUTO_MEASUREMENTS)
 	SHELL_CMD(next_point, NULL, "Continue to the next point", cmd_next_point),
 #endif
 	SHELL_CMD(dump, NULL,

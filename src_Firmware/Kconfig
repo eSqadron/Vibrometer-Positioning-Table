@@ -5,9 +5,9 @@
 menu "Wedka configurtion"
 rsource "./MotorControllerFirmware/BrushedMotorControllerFirmware/Kconfig"
 
-config MANUAL_MEASUREMENTS
-	bool "Perform manual measurements at each point in matrix"
-	default y
+config TIME_BTWN_POS_CHECKS_MSEC
+	int "Time in between checks if motors are at the desired position"
+	default 1000
 
 config AUTO_MEASUREMENTS
 	bool "Perform automatic measurements and calulations in each point in matrix"
