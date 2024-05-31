@@ -8,7 +8,6 @@
 
 // TODO - error handling, both from driver and proper returns in this functions!
 
-#define TIME_BETWEEN_POS_CHECKS_MSEC 1000
 #define SCANNER_AXES 2
 
 static struct ScannerDefinition scanner = {
@@ -17,18 +16,27 @@ static struct ScannerDefinition scanner = {
 
 static enum MotorDirection scanning_direction = FORWARD;
 
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 struct k_timer pause_timer;
+#endif
 struct k_timer wait_for_point_timer;
+
+#pragma region work_declarations
+static void point_achieved_handler(struct  k_work *dummy);
+static void wait_for_point_handler(struct  k_work *dummy);
+K_WORK_DEFINE(point_achieved_work, point_achieved_handler);
+K_WORK_DEFINE(wait_for_point_work, wait_for_point_handler);
+#pragma endregion
 
 static int target[SCANNER_AXES];
 
-// static bool if_taget_achieved(uint32_t target_pos, uint32_t current_position)
-// {
-// 	// TODO - add possibility to return actual max position from driver!
-// 	return abs(current_position-target_pos) <=
-// 		(360u * CONFIG_POSITION_CONTROL_MODIFIER) /
-// 		(CONFIG_POS_CONTROL_PRECISION_MODIFIER);
-// }
+static scanner_return_codes_t finish_scan(void)
+{
+	scanner.status = Finished;
+	// TODO, disable motors, etc.
+
+	return SCAN_SUCCESS;
+}
 
 static scanner_return_codes_t go_to_point()
 {
@@ -53,14 +61,25 @@ static scanner_return_codes_t go_to_point()
 		// }
 	}
 
-	k_timer_start(&wait_for_point_timer, K_MSEC(TIME_BETWEEN_POS_CHECKS_MSEC), K_NO_WAIT);
+	k_timer_start(&wait_for_point_timer, K_MSEC(CONFIG_TIME_BTWN_POS_CHECKS_MSEC), K_NO_WAIT);
 	return SCAN_SUCCESS;
 }
 
 static void wait_for_point_handler(struct  k_work *dummy)
 {
 	return_codes_t ret;
-	bool tagets_acheved = true; // Target achieved on BOTH channels!
+	scanner_return_codes_t scan_ret;
+	bool tagets_achieved = true; // Target achieved on BOTH channels!
+
+	// If someone decided to break the scan prematurely:
+	if (scanner.status == Stopping) {
+		scan_ret = finish_scan();
+		if (scan_ret != SCAN_SUCCESS) {
+			scanner.status = Error;
+			return;
+		}
+		return;
+	}
 
 	for (int i = 0; i < SCANNER_AXES; ++i) {
 		// printk("CH: %d, v: %d\n", scanner.axes[i].channel, pos_value);
@@ -76,7 +95,7 @@ static void wait_for_point_handler(struct  k_work *dummy)
 				}
 			}
 
-			tagets_acheved = false;
+			tagets_achieved = false;
 			break; // Start only one channel at the time (due to pwm bug)
 			// when this channel hits the target, if will be skipped and next channel
 			// will start
@@ -89,8 +108,9 @@ static void wait_for_point_handler(struct  k_work *dummy)
 		}
 	}
 
-	if (tagets_acheved) {
-		// Point is achieved
+	if (tagets_achieved) {
+		// Point is achieved - previous loop was finished without setting
+		// tagets_acheved to false!
 		// printk("Point Achieved!\n");
 		for (int i = 0; i < SCANNER_AXES; ++i) {
 			ret = motor_off(scanner.axes[i].channel);
@@ -99,32 +119,34 @@ static void wait_for_point_handler(struct  k_work *dummy)
 				return;
 			}
 		}
-		// TODO - remove this timer!
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 		k_timer_start(&pause_timer, K_MSEC(scanner.wait_time), K_NO_WAIT);
+#else
+		// Start function that handles situation, when target is achieved!
+		k_work_submit(&point_achieved_work);
+#endif
 		return;
 	} else {
+		// if target is still not achieved, start timer that will run this function again!
 		k_timer_start(&wait_for_point_timer,
-			      K_MSEC(TIME_BETWEEN_POS_CHECKS_MSEC),
+			      K_MSEC(CONFIG_TIME_BTWN_POS_CHECKS_MSEC),
 			      K_NO_WAIT);
 		return;
 	}
 }
 
-static scanner_return_codes_t finish_scan(void)
-{
-	scanner.status = Finished;
-	// TODO, disable motors, etc.
-
-	return SCAN_SUCCESS;
-}
-
-static void pause_timer_handler(struct  k_work *dummy)
+static void point_achieved_handler(struct  k_work *dummy)
 {
 	scanner_return_codes_t scan_ret;
 	struct ScanPoint new_point;
 
 	if (scanner.status == Stopping) {
-		scanner.status = Finished;
+		scan_ret = finish_scan();
+		if (scan_ret != SCAN_SUCCESS) {
+			scanner.status = Error;
+			return;
+		}
+		return;
 	}
 
 	scan_ret = get_current_point(&new_point);
@@ -139,8 +161,6 @@ static void pause_timer_handler(struct  k_work *dummy)
 		scanner.status = Error;
 		return;
 	}
-
-	// TODO - maybe turn off motor or lock it?
 
 	if (scanning_direction == FORWARD) {
 		target[Yaw] += scanner.axes[Yaw].delta;
@@ -189,7 +209,7 @@ static void pause_timer_handler(struct  k_work *dummy)
 		return;
 	}
 #endif
-#if defined(CONFIG_MANUAL_MEASUREMENTS)
+#if !defined(CONFIG_AUTO_MEASUREMENTS)
 	scanner.status = WaitingForContinuation;
 	return;
 #endif
@@ -227,7 +247,7 @@ scanner_return_codes_t get_current_point(struct ScanPoint *new_point)
 	return SCAN_SUCCESS;
 }
 
-#if defined(CONFIG_MANUAL_MEASUREMENTS)
+#if !defined(CONFIG_AUTO_MEASUREMENTS)
 scanner_return_codes_t move_to_next_point(void)
 {
 	scanner_return_codes_t scan_ret;
@@ -248,16 +268,16 @@ scanner_return_codes_t move_to_next_point(void)
 }
 #endif
 
-K_WORK_DEFINE(pause_timer_work, pause_timer_handler);
+
+
+#if defined(CONFIG_AUTO_MEASUREMENTS)
 static void pause_timer_handler_wrapper(struct k_timer *dummy)
 {
-	k_work_submit(&pause_timer_work);
+	k_work_submit(&point_achieved_work);
 }
-
 K_TIMER_DEFINE(pause_timer, pause_timer_handler_wrapper, NULL);
+#endif
 
-
-K_WORK_DEFINE(wait_for_point_work, wait_for_point_handler);
 static void wait_for_point_wrapper(struct k_timer *dummy)
 {
 	k_work_submit(&wait_for_point_work);
@@ -268,50 +288,52 @@ K_TIMER_DEFINE(wait_for_point_timer, wait_for_point_wrapper, NULL);
 scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner)
 {
 	return_codes_t ret;
-	if (scanner.status == Ready || scanner.status == Uninitialised) {
-		scanner = new_scanner;
 
-		// prepare driver
-		ret = mode_set(POSITION);
-		if (ret != SUCCESS) {
-			return SCAN_DRIVER_ERROR;
-		}
-		ret = motor_off(CH0);
-		if (ret != SUCCESS) {
-			return SCAN_DRIVER_ERROR;
-		}
-		ret = motor_off(CH1);
-		if (ret != SUCCESS) {
-			return SCAN_DRIVER_ERROR;
-		}
-
-		scanner.status = Ready;
-
-		return SCAN_SUCCESS;
+	if (scanner.status != Ready && scanner.status != Uninitialised) {
+		return SCAN_WRONG_STATUS;
 	}
 
-	return SCAN_WRONG_STATUS;
+	scanner = new_scanner;
+
+	// prepare driver
+	ret = mode_set(POSITION);
+	if (ret != SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+	ret = motor_off(CH0);
+	if (ret != SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+	ret = motor_off(CH1);
+	if (ret != SUCCESS) {
+		return SCAN_DRIVER_ERROR;
+	}
+
+	scanner.status = Ready;
+
+	return SCAN_SUCCESS;
 }
 
 scanner_return_codes_t start_scanner(void)
 {
 	scanner_return_codes_t scan_ret;
-	if (scanner.status == Ready) {
-		// printk("Starting!");
-		target[Yaw] = scanner.axes[Yaw].start;
-		target[Pitch] = scanner.axes[Pitch].start;
-		scan_ret = go_to_point();
 
-		if (scan_ret != SCAN_SUCCESS) {
-			return scan_ret;
-		}
-
-		scanner.status = Scanning;
-
-		return SCAN_SUCCESS;
+	if (scanner.status != Ready) {
+		return SCAN_WRONG_STATUS;
 	}
 
-	return SCAN_WRONG_STATUS;
+	// printk("Starting!");
+	target[Yaw] = scanner.axes[Yaw].start;
+	target[Pitch] = scanner.axes[Pitch].start;
+	scan_ret = go_to_point();
+
+	if (scan_ret != SCAN_SUCCESS) {
+		return scan_ret;
+	}
+
+	scanner.status = Scanning;
+
+	return SCAN_SUCCESS;
 }
 
 enum ScannerStatus get_status(void) {
@@ -342,21 +364,4 @@ scanner_return_codes_t stop_scanner(void) {
 	}
 
 	return SCAN_WRONG_STATUS;
-}
-
-char* get_status_as_string(enum ScannerStatus status)
-{
-	// source:
-	// https://www.linkedin.com/pulse/mapping-enum-string-c-language-sathishkumar-duraisamy/
-	static const char * const status_names[] = {
-		[Uninitialised] = "Uninitialised",
-		[Ready] = "Ready",
-		[Scanning] = "Scanning",
-		[WaitingForContinuation] = "WaitingForContinuation",
-		[Stopping] = "Stopping",
-		[Finished] = "Finished",
-		[Error] = "Error",
-	};
-
-	return status_names[status];
 }

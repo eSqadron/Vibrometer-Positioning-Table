@@ -3,9 +3,9 @@
 #include "scan_buffer.h"
 
 struct ScannerAxis {
-    int start;
-    int end;
-    unsigned int delta;
+    int32_t start;
+    int32_t end;
+    uint32_t delta;
     enum ChannelNumber channel;
 };
 
@@ -18,17 +18,32 @@ enum ScannerStatus {
     Uninitialised,
     Ready,
     Scanning,
+#if !defined(CONFIG_AUTO_MEASUREMENTS)
     WaitingForContinuation,
+#endif
     Stopping,
     Finished,
     Error,
 };
 
+// source:
+// https://www.linkedin.com/pulse/mapping-enum-string-c-language-sathishkumar-duraisamy/
+static const char * const status_names[] = {
+    [Uninitialised] = "Uninitialised",
+    [Ready] = "Ready",
+    [Scanning] = "Scanning",
+    [WaitingForContinuation] = "WaitingForContinuation",
+    [Stopping] = "Stopping",
+    [Finished] = "Finished",
+    [Error] = "Error",
+};
+
 struct ScannerDefinition {
     struct ScannerAxis axes[2];
-
     enum ScannerStatus status;
+#if defined(CONFIG_AUTO_MEASUREMENTS)
     unsigned int wait_time;
+#endif
 };
 
 scanner_return_codes_t get_current_point(struct ScanPoint *new_point);
