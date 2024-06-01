@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024 Jakub Mazur
 #include <zephyr/kernel.h>
 
 #include <stdlib.h>
@@ -38,7 +40,7 @@ static scanner_return_codes_t finish_scan(void)
 	return SCAN_SUCCESS;
 }
 
-static scanner_return_codes_t go_to_point()
+static scanner_return_codes_t go_to_point(void)
 {
 	return_codes_t ret;
 	// TODO - this could be moved to megaturbomacro to "primary" motor driver
@@ -126,13 +128,12 @@ static void wait_for_point_handler(struct  k_work *dummy)
 		k_work_submit(&point_achieved_work);
 #endif
 		return;
-	} else {
-		// if target is still not achieved, start timer that will run this function again!
-		k_timer_start(&wait_for_point_timer,
-			      K_MSEC(CONFIG_TIME_BTWN_POS_CHECKS_MSEC),
-			      K_NO_WAIT);
-		return;
 	}
+
+	// if target is still not achieved, start timer that will run this function again!
+	k_timer_start(&wait_for_point_timer,
+			K_MSEC(CONFIG_TIME_BTWN_POS_CHECKS_MSEC),
+			K_NO_WAIT);
 }
 
 static void point_achieved_handler(struct  k_work *dummy)
@@ -229,6 +230,7 @@ scanner_return_codes_t get_current_point(struct ScanPoint *new_point)
 #endif
 
 	uint32_t pos_value;
+
 	ret = position_get(&pos_value, scanner.axes[Yaw].channel);
 	if (ret != SUCCESS) {
 		return SCAN_DRIVER_ERROR;
@@ -336,11 +338,13 @@ scanner_return_codes_t start_scanner(void)
 	return SCAN_SUCCESS;
 }
 
-enum ScannerStatus get_status(void) {
+enum ScannerStatus get_status(void)
+{
 	return scanner.status;
 }
 
-scanner_return_codes_t reset_scanner(void) {
+scanner_return_codes_t reset_scanner(void)
+{
 	if (scanner.status == Finished || scanner.status == Error) {
 		scanner.status = Ready;
 
@@ -350,7 +354,8 @@ scanner_return_codes_t reset_scanner(void) {
 	return SCAN_WRONG_STATUS;
 }
 
-scanner_return_codes_t stop_scanner(void) {
+scanner_return_codes_t stop_scanner(void)
+{
 	if (scanner.status == WaitingForContinuation) {
 		scanner.status = Finished;
 

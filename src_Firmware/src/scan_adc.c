@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024 Jakub Mazur
 #if defined(CONFIG_AUTO_MEASUREMENTS)
 
 #include <zephyr/drivers/adc.h>
@@ -6,7 +8,7 @@
 
 static const struct adc_dt_spec adc_channel = ADC_DT_SPEC_GET(DT_PATH(zephyr_user));
 
-static bool is_initialised = false;
+static bool is_initialised; // False by default
 
 int16_t buf;
 struct adc_sequence sequence = {
@@ -19,24 +21,16 @@ struct adc_sequence sequence = {
 
 void init_adc_scan(void)
 {
-	int err;
-	// TODO - asserts
-        if (!adc_is_ready_dt(&adc_channel)) {
-		printk("ADC controller devivce %s not ready", adc_channel.dev->name);
-		return;
-	}
+	__ASSERT(adc_is_ready_dt(&adc_channel),
+		"ADC controller devivce %s not ready", adc_channel.dev->namel);
 
-	err = adc_channel_setup_dt(&adc_channel);
-	if (err < 0) {
-		printk("Could not setup channel #%d (%d)", 0, err);
-		return;
-	}
+	__ASSERT_EVAL((void) adc_channel_setup_dt(&adc_channel),
+		int r = adc_channel_setup_dt(&adc_channel),
+		r < 0, "Could not setup channel #%d (%d)", 0, r);
 
-	err = adc_sequence_init_dt(&adc_channel, &sequence);
-	if (err < 0) {
-		printk("Could not initalize sequnce");
-		return;
-	}
+	__ASSERT_EVAL((void) adc_sequence_init_dt(&adc_channel, &sequence),
+		int r = adc_sequence_init_dt(&adc_channel, &sequence),
+		r < 0, "Could not initialize sequnce");
 
 	is_initialised = true;
 }
@@ -65,5 +59,4 @@ scanner_return_codes_t perform_meas(int *out_val)
 
 	return SCAN_SUCCESS;
 }
-
 #endif

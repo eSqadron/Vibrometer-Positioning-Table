@@ -1,11 +1,16 @@
+/* SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2024 Jakub Mazur
+ *
+ */
 #pragma once
 #include "scanner_return_codes.h"
 
 struct ScanPoint {
-    int yaw;
-    int pitch;
+	int yaw;
+	int pitch;
 #if defined(CONFIG_AUTO_MEASUREMENTS)
-    int meas_value;
+	int meas_value;
 #endif
 };
 

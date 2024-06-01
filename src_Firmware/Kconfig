@@ -14,8 +14,8 @@ config AUTO_MEASUREMENTS
 	default n
 
 config MEASUREMENT_LENGTH
-        int "number of points taken at each point in matrix"
-        default 1
-        depends on AUTO_MEASUREMENTS
+	int "number of points taken at each point in matrix"
+	default 1
+	depends on AUTO_MEASUREMENTS
 
 endmenu

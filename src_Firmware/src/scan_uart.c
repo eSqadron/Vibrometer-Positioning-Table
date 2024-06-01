@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024 Jakub Mazur
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
 #include <stdlib.h>
@@ -25,33 +27,32 @@ static struct DefineStatus define_status = {
 #endif
 };
 
-
-
 static int define_axis(struct ScannerAxis new_axis, enum ScannerAxes axis)
 {
-    new_scanner.axes[axis] = new_axis;
+	new_scanner.axes[axis] = new_axis;
 
-    return 0;
+	return 0;
 }
 
 static int parse_args_to_axis(char *argv[], struct ScannerAxis *out_axis)
 {
-    out_axis->channel = (enum ChannelNumber)strtol(argv[1], NULL, 10);
-    out_axis->start = (int)strtol(argv[2], NULL, 10);
-    out_axis->end = (int)strtol(argv[3], NULL, 10);
-    out_axis->delta = (unsigned int)strtol(argv[4], NULL, 10);
+	out_axis->channel = (enum ChannelNumber)strtol(argv[1], NULL, 10);
+	out_axis->start = (int)strtol(argv[2], NULL, 10);
+	out_axis->end = (int)strtol(argv[3], NULL, 10);
+	out_axis->delta = (unsigned int)strtol(argv[4], NULL, 10);
 
-    return 0;
+	return 0;
 }
 
 static int cmd_scanner_define_yaw(const struct shell *shell, size_t argc, char *argv[])
 {
 	struct ScannerAxis new_axis;
+
 	parse_args_to_axis(argv, &new_axis);
 	define_axis(new_axis, Yaw);
 
 	shell_fprintf(shell, SHELL_NORMAL,
-		      "New scanner Yaw axis defined succesfully!\n"
+		      "New scanner Yaw axis defined successfully!\n"
 		      );
 
 	define_status.Yaw = true;
@@ -62,11 +63,12 @@ static int cmd_scanner_define_yaw(const struct shell *shell, size_t argc, char *
 static int cmd_scanner_define_pitch(const struct shell *shell, size_t argc, char *argv[])
 {
 	struct ScannerAxis new_axis;
+
 	parse_args_to_axis(argv, &new_axis);
 	define_axis(new_axis, Pitch);
 
 	shell_fprintf(shell, SHELL_NORMAL,
-		      "New scanner Pitch axis defined succesfully!\n"
+		      "New scanner Pitch axis defined successfully!\n"
 		      );
 	define_status.Pitch = true;
 
@@ -110,11 +112,12 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 #endif
 
 	scanner_return_codes_t scan_ret;
+
 	scan_ret = define_scanner(new_scanner);
 
 	switch (scan_ret) {
 	case SCAN_SUCCESS:
-		shell_fprintf(shell, SHELL_NORMAL, "Sucessfully defined scanner!\n");
+		shell_fprintf(shell, SHELL_NORMAL, "Successfully defined scanner!\n");
 		// TODO - write exact scanner sepcification
 	return 0;
 	case SCAN_WRONG_STATUS:
@@ -129,11 +132,12 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 static int cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[])
 {
 	scanner_return_codes_t scan_ret;
+
 	scan_ret = start_scanner();
 
 	switch (scan_ret) {
 	case SCAN_SUCCESS:
-		shell_fprintf(shell, SHELL_NORMAL, "Sucessfully started scan!\n");
+		shell_fprintf(shell, SHELL_NORMAL, "Successfully started scan!\n");
 	return 0;
 	case SCAN_WRONG_STATUS:
 		shell_fprintf(shell, SHELL_ERROR, "Scanner is in wrong status!\n");
@@ -147,6 +151,7 @@ static int cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[
 static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *argv[])
 {
 	enum ScannerStatus ret_status = get_status();
+
 	shell_fprintf(shell, SHELL_NORMAL, "status: %s\n", status_names[ret_status]);
 	return 0;
 }
@@ -171,7 +176,7 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 
 		shell_fprintf(shell, SHELL_NORMAL, "Dumping last %d points!\n", buff_size);
 
-		for(unsigned int i = 0; i < buff_size; ++i) {
+		for (unsigned int i = 0; i < buff_size; ++i) {
 #if defined(CONFIG_AUTO_MEASUREMENTS)
 			shell_fprintf(shell, SHELL_NORMAL, "Yaw: %d, Pitch: %d, Value: %d\n",
 				      buff[i].yaw,
@@ -235,7 +240,7 @@ static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 		return 0;
 	}
 
-	shell_fprintf(shell, SHELL_NORMAL, "Succesfully started movement to next point!\n");
+	shell_fprintf(shell, SHELL_NORMAL, "successfully started movement to next point!\n");
 
 	return 0;
 }
@@ -251,7 +256,7 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 		return 0;
 	}
 
-	shell_fprintf(shell, SHELL_NORMAL, "Succesfully stopped scanner!\n");
+	shell_fprintf(shell, SHELL_NORMAL, "successfully stopped scanner!\n");
 
 	return 0;
 }
