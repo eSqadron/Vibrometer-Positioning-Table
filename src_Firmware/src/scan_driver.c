@@ -52,15 +52,6 @@ static scanner_return_codes_t go_to_point(void)
 		if (ret != SUCCESS) {
 			return SCAN_DRIVER_ERROR;
 		}
-
-		if (is_target_achieved(scanner.axes[i].channel)) {
-			continue;
-		}
-		// TODO - uncomment when pwm HW bug is fixed
-		// for now, two channels shouldn't be started at the same time!
-		// if (!get_motor_off_on(scanner.axes[i].channel)) {
-		// 	motor_on(FORWARD, scanner.axes[i].channel);
-		// }
 	}
 
 	k_timer_start(&wait_for_point_timer, K_MSEC(CONFIG_TIME_BTWN_POS_CHECKS_MSEC), K_NO_WAIT);

@@ -264,11 +264,11 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL,
 		      "Define yaw scanning axis.\n"
-		      "Args: <channel> <start deg> <stop deg> <delta deg>",
+		      "Args: <HW channel> <start deg> <stop deg> <delta deg>",
 		      cmd_scanner_define_yaw, 5, 0),
 	SHELL_CMD_ARG(pitch, NULL,
 		      "Define pitch scanning axis.\n"
-		      "Args: <channel> <start deg> <stop deg> <delta deg>",
+		      "Args: <HW channel> <start deg> <stop deg> <delta deg>",
 		      cmd_scanner_define_pitch, 5, 0),
 #if defined(CONFIG_AUTO_MEASUREMENTS)
 	SHELL_CMD_ARG(time, NULL,
@@ -279,7 +279,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 );
 
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
-	SHELL_CMD(define, &sub_scanner_define, "Active template", NULL),
+	SHELL_CMD(define, &sub_scanner_define, "Define scaner parameters", NULL),
 	SHELL_CMD(ready, NULL,
 		  "Check scanner readiness and initialise prepared scanner", cmd_scanner_ready),
 	SHELL_CMD(start, NULL, "Start Scanner", cmd_scanner_start),
@@ -301,4 +301,4 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_SUBCMD_SET_END
 );
 
-SHELL_CMD_REGISTER(scan, &sub_scanner, "Scanner", NULL);
+SHELL_CMD_REGISTER(scan, &sub_scanner, "Scanner commands:", NULL);
