@@ -111,7 +111,7 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 	}
 #endif
 
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 
 	scan_ret = define_scanner(new_scanner);
 
@@ -131,7 +131,7 @@ static int cmd_scanner_ready(const struct shell *shell, size_t argc, char *argv[
 
 static int cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[])
 {
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 
 	scan_ret = start_scanner();
 
@@ -159,7 +159,7 @@ static int cmd_scanner_get_status(const struct shell *shell, size_t argc, char *
 static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[])
 {
 	unsigned int buff_size;
-	scanner_return_codes_t ret;
+	scan_return_codes_t ret;
 
 	struct ScanPoint *buff;
 
@@ -212,7 +212,7 @@ static int cmd_scanner_dump(const struct shell *shell, size_t argc, char *argv[]
 
 static int cmd_get_point(const struct shell *shell, size_t argc, char *argv[])
 {
-	scanner_return_codes_t ret;
+	scan_return_codes_t ret;
 	struct ScanPoint new_point;
 
 	ret = get_current_point(&new_point);
@@ -231,7 +231,7 @@ static int cmd_get_point(const struct shell *shell, size_t argc, char *argv[])
 
 static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 {
-	scanner_return_codes_t ret;
+	scan_return_codes_t ret;
 
 	ret = move_to_next_point();
 
@@ -247,7 +247,7 @@ static int cmd_next_point(const struct shell *shell, size_t argc, char *argv[])
 
 static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[])
 {
-	scanner_return_codes_t ret;
+	scan_return_codes_t ret;
 
 	ret = stop_scanner();
 

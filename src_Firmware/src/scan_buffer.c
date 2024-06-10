@@ -9,7 +9,7 @@ static unsigned int buffer_size; // 0 by default
 
 static struct ScanPoint *scan_buffer;
 
-scanner_return_codes_t add_point(struct ScanPoint new_point)
+scan_return_codes_t add_point(struct ScanPoint new_point)
 {
 	if (buffer_size == 0) {
 		scan_buffer = malloc(1 * sizeof(struct ScanPoint));
@@ -29,7 +29,7 @@ unsigned int get_buffer_size(void)
 	return buffer_size;
 }
 
-scanner_return_codes_t get_buffer(struct ScanPoint **first_point_out)
+scan_return_codes_t get_buffer(struct ScanPoint **first_point_out)
 {
 	if (buffer_size == 0) {
 		return BUFF_EMPTY;
@@ -40,7 +40,7 @@ scanner_return_codes_t get_buffer(struct ScanPoint **first_point_out)
 	return SCAN_SUCCESS;
 }
 
-scanner_return_codes_t clear_buffer(void)
+scan_return_codes_t clear_buffer(void)
 {
 	if (buffer_size == 0) {
 		return BUFF_EMPTY;

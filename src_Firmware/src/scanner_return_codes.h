@@ -16,4 +16,4 @@ typedef enum {
 
 	BUFF_EMPTY = 6,
 
-} scanner_return_codes_t;
+} scan_return_codes_t;

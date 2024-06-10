@@ -14,10 +14,10 @@ struct ScanPoint {
 #endif
 };
 
-scanner_return_codes_t add_point(struct ScanPoint new_point);
+scan_return_codes_t add_point(struct ScanPoint new_point);
 
 unsigned int get_buffer_size(void);
 
-scanner_return_codes_t get_buffer(struct ScanPoint **first_point_out);
+scan_return_codes_t get_buffer(struct ScanPoint **first_point_out);
 
-scanner_return_codes_t clear_buffer(void);
+scan_return_codes_t clear_buffer(void);

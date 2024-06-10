@@ -51,18 +51,18 @@ struct ScannerDefinition {
 #endif
 };
 
-scanner_return_codes_t get_current_point(struct ScanPoint *new_point);
+scan_return_codes_t get_current_point(struct ScanPoint *new_point);
 
-scanner_return_codes_t move_to_next_point(void);
+scan_return_codes_t move_to_next_point(void);
 
-scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner);
+scan_return_codes_t define_scanner(struct ScannerDefinition new_scanner);
 
-scanner_return_codes_t start_scanner(void);
+scan_return_codes_t start_scanner(void);
 
 enum ScannerStatus get_status(void);
 
-scanner_return_codes_t reset_scanner(void);
+scan_return_codes_t reset_scanner(void);
 
-scanner_return_codes_t stop_scanner(void);
+scan_return_codes_t stop_scanner(void);
 
 char *get_status_as_string(enum ScannerStatus status);

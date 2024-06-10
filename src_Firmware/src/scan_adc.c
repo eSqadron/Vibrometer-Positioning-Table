@@ -35,7 +35,7 @@ void init_adc_scan(void)
 	is_initialised = true;
 }
 
-scanner_return_codes_t perform_meas(int *out_val)
+scan_return_codes_t perform_meas(int *out_val)
 {
 	int err;
 

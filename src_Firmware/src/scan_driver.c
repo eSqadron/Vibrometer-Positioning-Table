@@ -32,7 +32,7 @@ K_WORK_DEFINE(wait_for_point_work, wait_for_point_handler);
 
 static int target[SCANNER_AXES];
 
-static scanner_return_codes_t finish_scan(void)
+static scan_return_codes_t finish_scan(void)
 {
 	scanner.status = Finished;
 	// TODO, disable motors, etc.
@@ -40,7 +40,7 @@ static scanner_return_codes_t finish_scan(void)
 	return SCAN_SUCCESS;
 }
 
-static scanner_return_codes_t go_to_point(void)
+static scan_return_codes_t go_to_point(void)
 {
 	return_codes_t ret;
 	// TODO - this could be moved to megaturbomacro to "primary" motor driver
@@ -61,7 +61,7 @@ static scanner_return_codes_t go_to_point(void)
 static void wait_for_point_handler(struct  k_work *dummy)
 {
 	return_codes_t ret;
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 	bool tagets_achieved = true; // Target achieved on BOTH channels!
 
 	// If someone decided to break the scan prematurely:
@@ -129,7 +129,7 @@ static void wait_for_point_handler(struct  k_work *dummy)
 
 static void point_achieved_handler(struct  k_work *dummy)
 {
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 	struct ScanPoint new_point;
 
 	if (scanner.status == Stopping) {
@@ -207,7 +207,7 @@ static void point_achieved_handler(struct  k_work *dummy)
 #endif
 }
 
-scanner_return_codes_t get_current_point(struct ScanPoint *new_point)
+scan_return_codes_t get_current_point(struct ScanPoint *new_point)
 {
 	return_codes_t ret;
 #if defined(CONFIG_AUTO_MEASUREMENTS)
@@ -241,9 +241,9 @@ scanner_return_codes_t get_current_point(struct ScanPoint *new_point)
 }
 
 #if !defined(CONFIG_AUTO_MEASUREMENTS)
-scanner_return_codes_t move_to_next_point(void)
+scan_return_codes_t move_to_next_point(void)
 {
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 
 	if (scanner.status != WaitingForContinuation) {
 		return SCAN_WRONG_STATUS;
@@ -278,7 +278,7 @@ static void wait_for_point_wrapper(struct k_timer *dummy)
 
 K_TIMER_DEFINE(wait_for_point_timer, wait_for_point_wrapper, NULL);
 
-scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner)
+scan_return_codes_t define_scanner(struct ScannerDefinition new_scanner)
 {
 	return_codes_t ret;
 
@@ -307,9 +307,9 @@ scanner_return_codes_t define_scanner(struct ScannerDefinition new_scanner)
 	return SCAN_SUCCESS;
 }
 
-scanner_return_codes_t start_scanner(void)
+scan_return_codes_t start_scanner(void)
 {
-	scanner_return_codes_t scan_ret;
+	scan_return_codes_t scan_ret;
 
 	if (scanner.status != Ready) {
 		return SCAN_WRONG_STATUS;
@@ -334,7 +334,7 @@ enum ScannerStatus get_status(void)
 	return scanner.status;
 }
 
-scanner_return_codes_t reset_scanner(void)
+scan_return_codes_t reset_scanner(void)
 {
 	if (scanner.status == Finished || scanner.status == Error) {
 		scanner.status = Ready;
@@ -345,7 +345,7 @@ scanner_return_codes_t reset_scanner(void)
 	return SCAN_WRONG_STATUS;
 }
 
-scanner_return_codes_t stop_scanner(void)
+scan_return_codes_t stop_scanner(void)
 {
 	if (scanner.status == WaitingForContinuation) {
 		scanner.status = Finished;
