@@ -261,6 +261,20 @@ static int cmd_scanner_stop(const struct shell *shell, size_t argc, char *argv[]
 	return 0;
 }
 
+static int cmd_scan_version(const struct shell *shell, size_t argc, char *argv[])
+{
+	const struct DriverVersion tmp_drv_ver = get_driver_version();
+	const struct DriverVersion tmp_scan_ver = get_scanner_version();
+
+	shell_fprintf(shell, SHELL_ERROR,
+		      "Motor Driver version: %d.%d\n"
+		      "Scanner version: %d.%d",
+		      tmp_drv_ver.major, tmp_drv_ver.minor,
+		      tmp_scan_ver.major, tmp_scan_ver.minor);
+
+	return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner_define,
 	SHELL_CMD_ARG(yaw, NULL,
 		      "Define yaw scanning axis.\n"
@@ -298,6 +312,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_scanner,
 	SHELL_CMD(stop, NULL,
 		  "Finish scanning prematurely",
 		  cmd_scanner_stop),
+	SHELL_CMD(version, NULL,
+		  "Get software version of scanner and motor driver",
+		  cmd_scan_version),
 	SHELL_SUBCMD_SET_END
 );
 

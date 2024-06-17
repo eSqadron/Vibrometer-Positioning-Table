@@ -66,3 +66,5 @@ scan_return_codes_t reset_scanner(void);
 scan_return_codes_t stop_scanner(void);
 
 char *get_status_as_string(enum ScannerStatus status);
+
+struct DriverVersion get_scanner_version(void);

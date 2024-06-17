@@ -30,6 +30,11 @@ K_WORK_DEFINE(point_achieved_work, point_achieved_handler);
 K_WORK_DEFINE(wait_for_point_work, wait_for_point_handler);
 #pragma endregion
 
+static const struct DriverVersion scanner_ver = {
+	.major = 1,
+	.minor = 0,
+};
+
 static int target[SCANNER_AXES];
 
 static scan_return_codes_t finish_scan(void)
@@ -360,4 +365,9 @@ scan_return_codes_t stop_scanner(void)
 	}
 
 	return SCAN_WRONG_STATUS;
+}
+
+struct DriverVersion get_scanner_version(void)
+{
+	return scanner_ver;
 }
