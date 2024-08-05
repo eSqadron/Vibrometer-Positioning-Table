@@ -1,0 +1,16 @@
+@startuml
+struct ScannerDefinition
+{
+    + struct ScannerAxis axes[2]
+    + enum ScannerStatus status
+}
+
+struct ScannerAxis {
+    + int32_t start
+    + int32_t end
+    + uint32_t delta
+    + enum ChannelNumber channel
+}
+
+ScannerAxis --> ScannerDefinition
+@enduml

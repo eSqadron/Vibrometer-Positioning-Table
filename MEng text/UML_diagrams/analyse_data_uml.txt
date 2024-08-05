@@ -1,0 +1,21 @@
+@startuml
+start
+
+:Inicjalizacja banku filtrów.;
+
+repeat
+   :Przefiltruj audio przez filtr tercjowy.;
+   :Oblicz RMS dla każdej tercji.;
+   :Pomnóż razy kosinusy kątów, pod jakimi były robione poimiary.;
+   :Zapisz wynik dla każdej tercji.;
+   :Przypisz kąty yaw oraz pitch do obliczonych średnich wartości drgań.;
+repeat while (Dla każdego punktu pomiarowego.);
+
+repeat
+:Dokonaj interpolacji obliczonych wcześniej wartości drgań na stałą siatkę\n100 na 100 puntków na podstawie posiadanych kątów yaw oraz pitch.;
+:Wykreśl wykres mierzonej powierzchni dla obecnej tercji.;
+:Zapisz wykres do pliku.;
+repeat while (Dla każdej tercji.);
+stop
+
+@enduml

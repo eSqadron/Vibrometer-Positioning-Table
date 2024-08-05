@@ -1,0 +1,48 @@
+\chapter{Lista opracownych skryptów i programów}
+W ramach pracy powstało następująca lista oprogramowania. Wszystkie wspomniane pliki, wraz z pełnym kodem źródłowym oraz opublikowanymi, skompilowanymi programami są dołączone jako załączniki do pracy:
+\section{Kod Embedded}
+\begin{itemize}
+    \item Rozbudowa sterownika do silników szczotkowych:
+    \begin{itemize}
+        \item \textbf{driver.c} oraz \textbf{driver.h} - pliki, w ramach których wykonywane są przerwania, od zegara oraz pinów enkodera, wraz z funkcjami ustawiającymi oraz odczytującymi parametry sterownika, jak obecna pozycja, nowa pozycja czy kierunek obrotu.
+        \item \textbf{calculations.h} - plik towarzyszący, definiujący regulatory PID oraz zawierający dodatkowe makra kalkulacyjne.
+    \end{itemize}
+    \item Skaner:
+    \begin{itemize}
+        \item \textbf{scan\_driver.c} oraz \textbf{scan\_driver.h} - Pliki definiujące główny algorytm przechodzący po punktach w których ma się odbyć skanowanie.
+        \item \textbf{scan\_buffer.c} oraz \textbf{scan\_buffer.h} - Pliki definiujące bufor, w którym zapisywane są kolejne odwiedzone punkty.
+        \item \textbf{scan\_adc.c} oraz \textbf{scan\_adc.h} - pliki uruchamiające przetwornik cyfrowo analogowy, który stanowi podstawę potencjalnej rozbudowy projektu.
+        \item \textbf{scan\_uart.c} - Plik definiujący obsługę USB, pozwalający na komunikację ze sterownikiem za pomocą szeregowych komend powłoki (serial shell).
+        \item \textbf{scan\_return\_codes.h} - Plik definiujący kody odpowiedzi funkcji, w tym kody błędów.
+        \item \textbf{main.c} - Plik zawierajćy kod odpowiedzialny za inicjalizację całego urządzenia i wszystkich jego funkcjonalności.
+    \end{itemize}
+    \item Pliki te, wraz z bibliotekami zephyr-a w wersji 2.6.0, kompilowane są za pomocą kompilatora GNU 12.2.0 do pojedynczego pliku \textbf{zephyr.hex}, który wgrywany jest na procesor. Do pracy dołączono ten plik w wersji sterownika 2.5 oraz skanera 1.0. Potencjalne nowsze wersje pliku, wraz z pełnym kodem źródłowym, będą znajdować się na repozytorium \href{https://github.com/eSqadron/Vibrometer-Positioning-Table}{Vibrometer Positioning Table}.
+\end{itemize}
+\section{API Matlaba}
+\label{appendix:maltalb_api}
+\begin{itemize}
+    \item \textbf{VibrometerAPI.m} - plik definiujący klasę \texttt{VibrometerAPI}, pozwalającą na łączenie z systemem.
+    \item \textbf{go\_to\_point\_sample.m} - skrypt, przedstawiający przykład ręcznego ustalenia nowego punktu, dojście do niego, oraz jego wyzerowanie.
+    \item \textbf{collect\_data\_sample.m} - skrypt, przedstawiający przykład kompletnego procesu skanowania, wraz z zapisywaniem próbek dźwięku w każdym punkcie. Skrypt ten został użyty podczas pomiarów wykonanych w rozdziale \ref{cha:Measurments}.
+    \item \textbf{analyze\_data\_sample.m} - skrypt, przedstawiający przykładową analizę danych zebranych podczas pomiarów. Skrypt ten został użyty podczas pomiarów wykonanych w rozdziale \ref{cha:Measurments}.
+    \item \textbf{collect\_background\_sample.m} - skrypt, pozwalający na zebranie oraz prezentację danych z wibrometru w jednym, wcześniej ustalonym punkcie. Skrypt ten został użyty do oszacowania wibracji tła podczas pomiarów wykonanych w rozdziale \ref{cha:Measurments}.
+\end{itemize}
+\section{C\# Hostapp}
+\begin{itemize}
+    \item Modele:
+    \begin{itemize}
+        \item \textbf{Channel.cs} - Plik zawierający definicję numerów kanałów.
+        \item \textbf{ScannerChannelDefinition.cs} - Plik zawierający opis pojedynczego kanału.
+        \item \textbf{VibrometerConnection.cs} - Plik zawierający klasę singletonu odpowiadającego za główny opis połączenia z urządzeniem za pomocą komunikacji szeregowej.
+        \item \textbf{VibrometerException.cs} - plik zawierający definicję wyjątków, rzucanych przez program.
+    \end{itemize}
+    \item Widoki i odpowiadające im modele widoków:
+    \begin{itemize}
+        \item \textbf{MainWindowViewModel.cs}, \textbf{MainWindow.axaml}, \textbf{MainWindow.axaml.cs} - Pliki zawierające definicję głównego okna, w którym wyświetlane są widoki.
+        \item \textbf{ConnectionViewModel.cs}, \textbf{ConnectionView.axaml}, \textbf{ConnectionView.axaml.cs} - Pliki definiujące widok połączenia, oraz zachowanie tego widoku.
+        \item \textbf{ConfigureViewModel.cs}, \textbf{ConfigureView.axaml}, \textbf{ConfigureView.axaml.cs} - Pliki definiujące widok konfiguracji urządzenia, oraz zachowanie tego widoku.
+        \item \textbf{ScanningViewModel.cs}, \textbf{ScanningView.axaml}, \textbf{ScanningView.axaml.cs} - Pliki definiujące widok skanowania powierzchni przez urządzenie, oraz zachowanie tego widoku.
+        \item \textbf{ManualControlViewModel.cs}, \textbf{ManualControlView.axaml}, \textbf{ManualControlView.axaml.cs} - Pliki definiujące widok manualnej kontroli nad urządzeniem, oraz zachowanie tego widoku.
+    \end{itemize}
+    \item Wszystkie powyższe pliki kompilowane są do pliku \textbf{VibrometerHostApp.exe}, wraz z towarzyszącymi plikami .dll. Powstały plik .exe wykonywalny jest na systemach z oprogramowaniem Windows 10 lub nowszym.
+\end{itemize}

@@ -1,0 +1,21 @@
+@startuml
+start
+
+if (analizowany pin\n(który wywołał przerwanie)) then (P0)
+  if (wartość P1 == P0) then (T)
+    :count_cycles--;
+  else (N)
+    :count_cycles++;
+  endif
+else (P1)
+  if (wartość P0 == P1) then (T)
+    :count_cycles++;
+  else (N)
+    :count_cycles--;
+  endif
+endif
+
+: zapisz wartość analizowanego pinu,\naby w kolejnym przerwaniu dało się jej użyć;
+
+stop
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+start
+
+:Inicjalizacja systemu do pozycjonowania.;
+:Inijcalizacja karty dźwiękowej.;
+:Start skanowania.;
+
+repeat
+   repeat
+    :Zaczekaj 100ms.;
+    :Odczytaj status.;
+  repeat while (Status systemu) is (Scanning);
+
+  :Zaczekaj 2 sekunday na ustabilizowanie drgań systemu.;
+  :Zapisz próbkę 5s dźwięku.;
+  :Zapisz obecną pozycję.;
+  :Odczytaj status.;
+  if (Status Systemu) then (Finished)
+      stop
+  endif
+  :Wywołaj ruch do kolejnej pozycji.;
+
+
+@enduml

@@ -1,0 +1,22 @@
+\chapter{Lista modeli 3D}
+W ramach pracy powstały następujące modele 3D:
+\begin{itemize}
+    \item \textbf{VibrometerPositioningTable.f3d} -- Główne złożenie całego stołu do pozycjonowania wibrometru.
+    \item Dolna, stacjonarna część stołu:
+    \begin{itemize}
+        \item \textbf{StaticBase.f3d} -- Cześć podtrzymująca dolne łożysko, do której przymocowany jest silnik.
+        \item  \textbf{DownTable.f3b} -- Część która pozwala na montaż na stojaku mikrofonowym z gwintem \textbf{M6}.
+        \item  \textbf{BaseSpacer.f3b} -- Część łącząca \textbf{StaticBase} oraz \textbf{DownTable}, dająca przestrzeń na montaż silnika.
+    \end{itemize}
+    \item Środkowa część stołu, poruszająca się w jednej osi.
+    \begin{itemize}
+        \item \textbf{PartialMovementTable.f3d} -- Część stołu, która porusza się dookoła osi z. Dodatkowo zawiera otwory, aby przymocować statyczną część drugiego silnika.
+        \item \textbf{HubSpacer2.f3b} \& \textbf{HubSpcer5.f3b} -- Modele, które razem z hubem montażowym Pololu 1083 tworzą sprzęgiełko łączące \textbf{PartialMovementTable} wraz z dolnym silnikiem.
+    \end{itemize}
+    \item Górna część stołu, która wraz z wibrometrem obraca się dookoła obu osi.
+    \begin{itemize}
+        \item \textbf{Holder1.f3d} \& \textbf{Holder2.f3d} -- Dwie części, jedna montowalna do wału drugiego silnika, druga bezpośrednio na łożysko kulkowe.
+        \item \textbf{PlywoodPlate.f3d} -- Cześć łącząca holdery do właściwej głowicy wibrometru.
+    \end{itemize}
+    
+\end{itemize}

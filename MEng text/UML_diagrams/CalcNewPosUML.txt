@@ -1,0 +1,22 @@
+@startuml
+start
+
+:Obliczenie ilości przerwań od enkodera jakie zostały
+wywołane od ostatniego przerwania od czasu:
+∆_count_cycles = old_count_cycles − count_cycles;
+:Zapisanie obecnego stanu akumulatora ilości przerwań:
+old_count_cycles = count_cycles;
+:Zamiana ilości przerwań na kąt opbrotu w stopniach:
+∆_degrees = ∆_count_cycles * 360 / ENC_STES_PER_ROTATION * GEARSHIFT_RATIO;
+:Obliczenie nowej pozycji:
+new_position = current_position + ∆_degrees;
+group Zawinięcie nowej pozycji do dopuszczalnego zakresu:
+:current_position =;
+:new_position mod 360 + ;
+if (new_position) then (< 0)
+  : + 360;
+else (>= 0)
+endif
+end group
+stop
+@enduml

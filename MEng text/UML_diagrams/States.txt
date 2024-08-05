@@ -1,0 +1,36 @@
+@startuml
+[*] --> Uninitialised
+Uninitialised --> Ready : Wysłanie komend: define yaw i pitch
+Ready --> Scanning : komenda start
+Scanning --> WaitingForContinuation: osiągnięto kolejny zdefiniowany punkt
+WaitingForContinuation --> Scanning: komenda next_point
+Scanning --> Finished : osiągnięto ostatni zdefiniowany punkt
+Finished --> Ready : komenda dump
+WaitingForContinuation --> Finished: komenda stop
+
+Uninitialised: define
+Uninitialised: ready
+Uninitialised: status
+
+Ready: define
+Ready: ready
+Ready: status
+Ready: get_point
+Ready: start
+
+Scanning: status
+Scanning: get_point
+Scanning: dump
+Scanning: stop
+
+WaitingForContinuation: status
+WaitingForContinuation: get_point
+WaitingForContinuation: next_point
+WaitingForContinuation: dump
+WaitingForContinuation: stop
+
+Finished: status
+Finished: get_point
+Finished: dump
+
+@enduml

@@ -1,0 +1,210 @@
+\pdfminorversion=5 
+\pdfcompresslevel=9
+\pdfobjcompresslevel=2
+
+\documentclass[12pt]{aghdpl}
+%\documentclass[language=en,11pt]{aghdpl}  % praca w języku angielskim
+
+%\usepackage[MeX]{polski}
+%\usepackage[hidelinks]{hyperref}
+%\usepackage{color}
+%\usepackage{mathtools}
+%\usepackage[OT4]{fontenc}
+%\usepackage{listings}
+%\usepackage[margin=1in]{geometry}
+%\usepackage{float}
+%\floatstyle{plaintop}
+%\restylefloat{table}
+%\usepackage{breqn}
+\usepackage{wrapfig}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep}
+
+%--------------------------------------------------------------------------
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage{MnSymbol}
+
+\usepackage{float}
+
+\usepackage{soul}
+\definecolor{Light}{gray}{.90}
+\sethlcolor{Light}
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\hl{#1}}}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour_python}{rgb}{0.97,1,0.95}
+\definecolor{backcolour_bash}{rgb}{0.94,0.94,0.94}
+\definecolor{backcolour_xml}{rgb}{1,0.93,0.93}
+\definecolor{backcolour}{rgb}{0.97,1,0.9}
+
+\lstset{
+  literate={ą}{{\k a}}1
+  		     {Ą}{{\k A}}1
+           {ż}{{\. z}}1
+           {Ż}{{\. Z}}1
+           {ź}{{\' z}}1
+           {Ź}{{\' Z}}1
+           {ć}{{\' c}}1
+           {Ć}{{\' C}}1
+           {ę}{{\k e}}1
+           {Ę}{{\k E}}1
+           {ó}{{\' o}}1
+           {Ó}{{\' O}}1
+           {ń}{{\' n}}1
+           {Ń}{{\' N}}1
+           {ś}{{\' s}}1
+           {Ś}{{\' S}}1
+           {ł}{{\l}}1
+           {Ł}{{\L}}1
+}
+% https://gist.github.com/KKozlowski/bd2c2267ea68fd5f92c30ac5ebeb2f16
+
+\lstset{prebreak=\raisebox{0ex}[0ex][0ex]
+        {\ensuremath{\rhookswarrow}}}
+\lstset{postbreak=\raisebox{0ex}[0ex][0ex]
+        {\ensuremath{\rcurvearrowse\space}}}
+
+\lstset{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{orange},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=false,
+    numbers=none,
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    columns=fullflexible,
+}
+
+\lstdefinestyle{C}{
+  language=C,
+  numbers=left,
+  stepnumber=1,
+  frame=single,
+  backgroundcolor=\color{backcolour},
+  xleftmargin=\parindent,
+  morekeywords={int32_t, uint32_t},
+}
+
+\lstdefinestyle{Matlab}{
+  language=Matlab,
+  numbers=left,
+  stepnumber=1,
+  frame=single,
+  backgroundcolor=\color{backcolour},
+  xleftmargin=\parindent,
+  morekeywords={self, yield},
+}
+
+%---------------------------------------------------------------------------
+
+\author{inż. Jakub Mazur}
+\shortauthor{J. Mazur}
+
+
+\titlePL{System pozycjonowania wibrometru laserowego}
+\titleEN{Laser vibrometer positioning system}
+
+
+\shorttitlePL{System pozycjonowania wibrometru laserowego} % skrócona wersja tytułu jeśli jest bardzo długi
+\shorttitleEN{Laser vibrometer positioning system}
+
+
+% Dopuszczalne wartości[1,2]:
+% * "Projekt dyplomowy" - na koniec studiów I stopnia
+% * "Praca dyplomowa" - na koniec studiów II stopnia
+% [1] Zasady dyplomowania w roku akademickim 2020/2021 (Decyzja Dziekana WEAIiIB nr 16/2020 z dnia 9 grudnia 2020 roku)
+% [2] Załącznik nr 1a) do Decyzji nr 16/2020 Dziekana Wydziału EAIiIB z dnia 09 grudnia 2020 r.
+\thesistype{Praca dyplomowa}
+%\thesistype{Master of Engineering Thesis}
+
+%\supervisor{Artur Flach, BEng, PhD}
+\supervisor{dr inż. Artur Flach}
+
+%\degreeprogramme{Acoustical Engineering}
+\degreeprogramme{Inżynieria Akustyczna}
+
+\date{2024}
+
+%\department{Katedra Informatyki Stosowanej}
+%\department{Department of Applied Computer Science}
+
+%\faculty{Faculty of Mechanical Engineering and Robotics}
+\faculty{Wydział Inżynierii Mechanicznej i Robotyki}
+
+\acknowledgements{Serdecznie dziękuję mojemu Promotorowi Dr Inż. Arturowi Flachowi, za wsparcie, zaangażowanie i merytoryczną pomoc przy tworzeniu pracy. Chciałbym także podziękować całemu zespołowi, z którym pracowałem nad projektem WWE w kole naukowym Integra, za pomoc w wyborze technologii użytych w pracy.}
+
+
+\begin{document}
+    \newenvironment{abstractpage}
+    {\cleardoublepage\vspace*{\fill}\thispagestyle{empty}}
+    {\vfill\cleardoublepage}
+    \renewenvironment{abstract}[1]
+    {\bigskip\selectlanguage{#1}%
+    \begin{center}\bfseries\abstractname\end{center}}
+    {\par\bigskip}
+	\titlepages
+
+	\begin{abstractpage}
+    \begin{abstract}{polish}
+        Celem pracy było zaprojektowanie systemu, pozwalającego na przeprowadzanie pomiarów skanujących za pomocą wibrometru punktowego. W ramach pracy miała powstać konstrukcja, wraz z oprogramowaniem pozwalającym na jej sterowanie.
+
+        Rezultatem pracy był wydrukowany w technologii 3D oraz wykonany na CNC ruchomy stół, pozwalający na ruch dookoła dwóch osi, yaw (z) oraz pitch (y). Dodatkowo, używając bibliotek Zephyr RTOS, zaimplementowane zostało oprogramowanie w języku C, pozwalające na osiąganie przez system kolejnych pozycji i dokonywania skanów powierzchni. Aby umożliwiać prostszą interakcję z urządzeniem, powstało API w języku Matlab, oraz aplikacja desktopowa z GUI w języku C\#.
+
+        Testy wykazały, że skanowanie obiektów przy pomocy wibrometru punktowego, oraz skonstruowanego urządzenia, daje oczekiwane rezultaty.
+        
+        \bigskip
+        \textbf{Słowa kluczowe:} Systemy Embedded, Wibrometria Punktowa, Wibrometria Skanująca, Język C, Zephyr RTOS
+    \end{abstract}
+    % \newpage
+    \begin{abstract}{english}
+        The aim of the work was to design a system that would allow scanning measurements to be taken using a point vibrometer. The work was to design a structure, along with software to control it.
+
+        The result of the work was a 3D printed and CNC fabricated moving table, allowing movement around two axes, yaw (z) and pitch (y). In addition, C-language software was implemented using Zephyr RTOS libraries, allowing the system to reach successive positions and scan surfaces. To enable simpler interaction with the device, an API was developed in Matlab language, and a desktop application with a GUI in C\# language.
+
+        Tests have shown that scanning objects with the point vibrometer, using the constructed device, produces the expected results.
+        
+        \bigskip    
+        \textbf{Keywords:} Embedded Systems, Laser Point Vibrometry, Laser Scanning Vibrometry, C-Language, Zephyr RTOS
+    \end{abstract}
+\end{abstractpage}	
+	
+	\RedefinePlainStyle
+	
+	\setcounter{tocdepth}{2}
+	\tableofcontents
+	\clearpage
+	
+	\include{chapter1}
+    \include{chapter2}
+    \include{chapter3}
+    \include{chapter4}
+    \include{chapter5}
+    \include{chapter6}
+	
+	% itd.
+	% \appendix
+	% \include{dodatekA}
+	% \include{dodatekB}
+	% itd.
+	
+	\printbibliography
+
+    \appendix
+    \include{dodatekA}
+    \include{dodatekB}
+    \include{dodatekC}
+\end{document}
