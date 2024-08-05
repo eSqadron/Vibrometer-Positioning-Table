@@ -1,0 +1,18 @@
+@startuml
+class VibrometerAPI {
+  + VibrometerAPI(SerialPort)
+  + define_scanner(obj, yaw_channel, yaw_start, yaw_end, yaw_delta, pitch_channel, pitch_start, pitch_end, pitch_delta)
+  + close(obj)
+  .. Lista funkcji wymagających zdefiniowanego skanera ..
+  + start_scan(obj)
+  + status = get_status(obj)
+  + [yaw, pitch] = get_point(obj)
+  + next_point(obj)
+  + full_response = dump_points(obj)
+  + stop_scan(obj)
+  .. Lista funkcji operujących na numerze kanału, nie osi. Można ich używać przed zdefiniowaniem skanera ..
+  + actual_position = get_position(obj, channel)
+  + go_to_position(obj, channel, point_degree)
+  + zero_position(obj, channel)
+}
+@enduml

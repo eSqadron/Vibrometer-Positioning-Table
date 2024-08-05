@@ -1,0 +1,51 @@
+@startuml
+allowmixing
+
+
+object MotorDriver {
+  .. Funkcje wchodzące w interakcję z pinami enkodera i silnika ..
+  - static void enc_callback(enum ChannelNumber chnl, enum PinNumber pin)
+  - static void update_speed_and_position_continuous(struct k_work *work)
+  etc...
+
+  .. Funkcje do ustawiania i odczytywania wartości ..
+  - static struct DriverChannel drv_chnls[2]
+  + return_codes_t get_motor_actual_direction(enum ChannelNumber chnl, enum MotorDirection *out_dir)
+  + return_codes_t speed_get(enum ChannelNumber chnl, uint32_t *value)
+  + return_codes_t target_position_set(int32_t new_target_position, enum ChannelNumber chnl)
+  + bool is_target_achieved(enum ChannelNumber chnl)
+  + etc...
+}
+object Scanner {
+  .. funkcje, pozwalające na zdefiniowanie macierzy i przeskanowanie\npowierzchni za pomocą funkcji z warstwy niższej, MotorDriver:..
+  + scan_return_codes_t define_scanner(struct ScannerDefinition new_scanner)
+  + scan_return_codes_t start_scanner(void)
+  + scan_return_codes_t get_current_point(struct ScanPoint *new_point)
+  + enum ScannerStatus get_status(void)
+  - static struct ScannerDefinition scanner
+  etc...
+}
+object "Serial Shell" as shell {
+  .. odwołania, wywołujące funkcje niższych warstw ..
+  - int cmd_scanner_define_yaw(const struct shell *shell, size_t argc, char *argv[])
+  - int cmd_scanner_define_pitch(const struct shell *shell, size_t argc, char *argv[])
+  - cmd_scanner_start(const struct shell *shell, size_t argc, char *argv[])
+  - int cmd_off_on_start_forward(const struct shell *shell, size_t argc, char *argv[])
+  etc...
+
+  .. Funkcje, dające użytkownikowi kontrolę za pomocą konsoli uart ..
+  + {method} scan define yaw
+  + {method} scan define pitch
+  + {method} scan start
+  + {method} motor start forward
+  etc...
+}
+
+actor "Kontrola użytkownika" as user
+
+MotorDriver *-- Scanner
+Scanner *-- shell
+
+MotorDriver *-- shell
+shell *-- user
+@enduml

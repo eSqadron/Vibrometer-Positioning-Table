@@ -1,0 +1,26 @@
+struct DriverChannel {
+  .. referencje do pinów ..
+	+ const struct pwm_dt_spec pwm_motor_driver
+	+ const struct gpio_dt_spec set_dir_pins[PINS_PER_CHANNEL]
+	+ const struct gpio_dt_spec enc_pins[PINS_PER_CHANNEL]
+	+ struct gpio_callback enc_cb[PINS_PER_CHANNEL]
+        + bool prev_val_enc[PINS_PER_CHANNEL]
+
+  .. liczniki przerwań ekodera ..
+	+ int64_t count_cycles
+	+ int64_t old_count_cycles
+
+  .. kontrola prędkości (nieużywana) ..
+	+ uint32_t target_speed_mrpm
+	+ uint32_t actual_mrpm
+	+ uint32_t speed_control
+
+  .. kontrola pozycji ..
+	+ uint32_t curr_pos
+	+ uint32_t target_position
+	+ uint32_t target_speed_for_pos_cntrl
+        + bool target_achieved
+  .. stan silnika (włączenie oraz kierunek obrotu) ..
+	+ enum MotorDirection actual_dir;
+	+ bool is_motor_on;
+}

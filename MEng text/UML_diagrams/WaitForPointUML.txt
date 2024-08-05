@@ -1,0 +1,24 @@
+@startuml
+start
+
+:Sprawdź, czy nie został wywołany stop.\nJeżeli tak, przerwij proces skanowania.;
+
+:Ustaw zmienną targets_achieved na true.;
+
+partition "Dla obu kanałów:" {
+    if (Cel na jednym kanale osiągnięty?) then (yes)
+      :Wyłącz silnik tego kanału\n(lub podtrzymaj wyłączenie).;
+    else (no)
+      :Włącz silnik tego kanału\n(lub podtrzymaj włączony).;
+      :Ustaw zmienną targets_achieved\nna wartość false.;
+      :Przerwij pętlę.;
+    endif
+}
+if (targets_achieved wynosi true) then (yes)
+    :Wyłącz silniki na obu kanałach.;
+    :Wywołaj funkcję, odpowiedzialną za\nprzetworzenie osiągnięcia celu.;
+else (no)
+    :Ponownie wystartuj timer, po upływie\nktórego opisywana funkcja zostanie\nwywołana jeszcze raz.;
+endif
+stop
+@enduml

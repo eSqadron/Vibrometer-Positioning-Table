@@ -1,0 +1,24 @@
+@startuml
+start
+
+:Sprawdź, czy nie został wywołany stop.\nJeżeli tak, przerwij proces skanowania.;
+
+:Bierz wartości yaw i pitch obecnego punktu i je zapisz\n(na potrzeby komendy scan dump);
+
+:W zależności od kierunku skanowania -\nUtwórz nowy cel target[Yaw] poprzez dodanie lub odjęcie\ndelty kanału yaw;
+
+if (Jeżeli nastąpił koniec rzędu,\nczyli target[yaw] jest poniżej,\nlub powyżej zakresu start/end.) then (Tak)
+    :Cofnij ostatni krok, modyfikację target[Yaw].;
+    :Przejdź do kolejnego rzędu, poprzez inkrementację\no wartość delta celu target[Pitch].;
+    :Zmień kierunek skanowania.;
+else (Nie)
+endif
+
+if (Jeżeli nastąpił koniec skanowania,\nczyli target[pitch] jest powyżej\nzakresu end.) then (Tak)
+    :Zakończ skanowanie;
+    :Przerwij wykonywanie funkcji;
+else (Nie)
+endif
+:Przejdź do stanu oczekiwania na kontynuację przez użytkownika;
+stop
+@enduml

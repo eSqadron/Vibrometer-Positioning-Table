@@ -1,0 +1,54 @@
+@startuml
+start
+:Oblicz różnicę pozycji, obecnej i docelowej::
+position_delta = target_position - curr_pos;
+group Obliczanie kierunku ruchu oraz\nnajkrótszej odległości.
+
+if (abs(position_delta)) then (< 180)
+  if (position_delta) then (>=0)
+    :Ustaw kierunek\nruchu do przodu.;
+  else (<0)
+    :Ustaw kierunek\nruchu do tyłu.;
+  endif
+  :delta_shortest_path = abs(position_delta);
+else (>= 180)
+  if (position_delta) then (>=0)
+    :Ustaw kierunek\nruchu do tyłu.;
+  else (<0)
+    :Ustaw kierunek\nruchu do przodu.;
+  endif
+  :delta_shortest_path = 180 - abs(position_delta);
+endif
+
+end group
+
+group Sprawdzenie, czy cel został osiągnięty.
+
+if(jeżeli delta_shortest_path mieści się w węższym zakresie, uwzględniającym histerezę) then (T)
+  :cel został osiągnięty;
+else (N)
+  if(jeżeli delta_shortest_path mieści się w szerszym zakresie oraz\ncel był już osiągnięty w poprzednim wykonaniu przerwania) then (T)
+    :cel nadal jest osiągnięty;
+  else (N)
+    :cel nie jest osiągnięty;
+  endif
+endif
+
+end group
+
+group Ustalenie prędkości oraz\nwypełnienia PWM
+if (Jeżeli cel został osiągnięty) then (T)
+  :Ustaw sterowanie\n(wypełnienie PWM) na 0.;
+else (N)
+  :Oblicz prędkość docelową (target_speed_for_pos_cntrl) na podstawie odległości\n od celu (delta_shortest_path), używając regulatora PID.;
+  :Odetnij minmalną prędkość docelową na wartości MINIMUM_SPEED, która dla\ntego projektu wynosi 1/26 maksymalnej prędkości silnika.;
+group kontrola stałej prędkości
+  :Oblicz różnicę obecnej prędkości i prędkości docelowej.;
+  :Używając drugiego regulatora PID, oblicz o ile powinna się zmienić\nwartość wypełnienia PWM w tej iteracji, oby osiągnąć docelową prędkość.;
+  :Zmodyfikuj wypełnienie PWM tak, aby zbliżyć się do\nfaktycznej prędkości docelowej silnika.;
+end group
+endif
+end group
+
+stop
+@enduml

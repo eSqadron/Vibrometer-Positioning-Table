@@ -1,0 +1,18 @@
+\chapter{Instrukcja użytkownika}
+\section{Instrukcja montażu oraz serwisowania urządzenia}
+\begin{itemize}
+    \item Urządzenie należy zasilić zasilaczem $12V$, $2A$. Zasilanie należy podłączyć do niebieskiego gniazda, zgodnie z oznaczeniem $\pm$ znajdującym się obok gniazda.
+    \item Zgodnie z opisem znajdującym się w rozdziale \ref{cha:Electronics}, w razie rozpięcia elektroniki, silniki należy podłączyć do środkowego kompletu pinów, blaszkami wyjścia z silnika w stronę dongla. (kabel czerwony silnika w stronę USB.) Kanał pierwszy znajduje się od wewnątrz płytki.
+    \item W razie potrzeby wgrania nowego kodu, należy użyć programu Programmer wchodzącego w skład zestawu
+    \href{https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop}{nRF Connect for Desktop}. Należy wcisnąć przycisk podpisany jako reset znajdujący się na Donglu, aby Programmer wykrył bootloader urządzenia, oraz wgrać nowy plik zephyr.hex.
+    \item Dokładna instrukcja montażu modeli 3D znajduje się w rozdziale \ref{cha:3d_models_assembly}.
+\end{itemize}
+\section{Instrukcja użytkowania urządzenia}
+\begin{enumerate}
+    \item Urządzenie należy podpiąć pod komputer za pomocą kabla USB.
+    \item Urządzenie zostanie wykryte jako wirtualny port COM. Dokładny opis łączenia z wirtualnymi portami COM na różnych systemach operacyjnych znajduje się w rozdziale \ref{cha:COM_connect}. Przykładowym programem, za którego pomocą można wydać urzązeniu polecenia jest program \href{https://www.putty.org/}{PuTTY}. Dodatkowo, COM port jest bardzo popularnym sposobem łączenia się z urządzeniami i istnieje wiele dobrych materiałów na Internecie temu poświęconych.
+    \item Alternatywnym sposobem znalezienia poprawnego COM portu jest aplikacja na komputery PC, jaka powstała w ramach pracy. Na głównym ekranie tej aplikacji znajduje się lista podpiętych urządzeń, i jest ona w stanie wykryć, które z nich to wibrometr. Dokładny opis działania aplikacji znajduje się w rozdziale \ref{cha:gui_app}.
+    \item Lista komend, jakie można wydać przy pomocy konsoli znajduje się w rozdziale \ref{cha:commands}.
+    \item Opis użytkowania urządzenia z poziomu Matlab-a znajduje się w rozdziale \ref{cha:matlab_api}. W ramach pracy powstały także gotowe przykłady pozwalające na przeskanowanie powierzchni. Ich lokalizacja oraz lista znajduje się w dodatku \ref{appendix:maltalb_api}.
+    \item W interakcję z wibrometrem można wejść także za pomocą wspominanej już aplikacji desktopowej. Dokładny jej opis znajduje się w rozdziale \ref{cha:gui_app}.
+\end{enumerate}
